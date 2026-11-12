@@ -1,0 +1,1001 @@
+{
+  "cases": [
+    {
+      "id": "blind5_casalbuoni2023_paraphrase_05",
+      "source_text": "An additional advantage of NbTi SCUs with respect to permanent magnet-based undulators is radiation hardness, which has been demonstrated in NbTi magnets used in different colliders such as the Tevatron [4], HERA [5], and LHC [6] for several decades.",
+      "user_answer": "NbTi製SCUは永久磁石式より耐放射線性にも優れ、その特性はテバトロンやHERA、LHCなどで長年使われてきたNbTi磁石によって実証されている。",
+      "evaluation": {
+        "verdict": "partial",
+        "score": 84,
+        "feedback": "「An additional advantage」に対応する意味が訳文から抜けています。基準: 追加の利点",
+        "reference_translation": "NbTi SCUは永久磁石ベースのアンジュレーターに対して放射線耐性という追加の利点があり、これはTevatron[4]、HERA[5]、LHC[6]などの異なるコライダーで数十年にわたり確認されています。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "permanent magnet-based undulators",
+            "message": "「永久磁石式」は「永久磁石ベースのアンジュレーター」の略で、文脈によっては不明確",
+            "suggestion": "「永久磁石ベースのアンジュレーター」"
+          },
+          {
+            "category": "omission",
+            "source_span": "An additional advantage",
+            "message": "この意味単位に対応する内容が訳文から欠落しています。",
+            "suggestion": "追加の利点"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "An additional advantage",
+            "translation": "追加の利点",
+            "status": "missing"
+          },
+          {
+            "source": "of NbTi SCUs with respect to permanent magnet-based undulators",
+            "translation": "永久磁石ベースのアンジュレーターに対してNbTi SCUの",
+            "status": "warning"
+          },
+          {
+            "source": "is radiation hardness",
+            "translation": "放射線耐性という",
+            "status": "correct"
+          },
+          {
+            "source": "which has been demonstrated",
+            "translation": "これは確認されています",
+            "status": "correct"
+          },
+          {
+            "source": "in NbTi magnets used in different colliders",
+            "translation": "異なるコライダーで使用されているNbTiマグネットで",
+            "status": "correct"
+          },
+          {
+            "source": "such as the Tevatron [4], HERA [5], and LHC [6]",
+            "translation": "Tevatron[4]、HERA[5]、LHC[6]など",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "An additional advantage",
+            "translation": "追加の利点",
+            "importance": "core",
+            "status": "missing",
+            "note": "意味存在監査: この意味単位を識別する内容語がユーザー訳の逆翻訳にほぼ残っておらず、単位全体の欠落と判定しました。",
+            "evidence_span": "",
+            "earned_points": 0,
+            "max_points": 16
+          },
+          {
+            "id": "u2",
+            "source": "of NbTi SCUs with respect to permanent magnet-based undulators",
+            "translation": "永久磁石ベースのアンジュレーターに対してNbTi SCUの",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 11,
+            "max_points": 11
+          },
+          {
+            "id": "u3",
+            "source": "is radiation hardness",
+            "translation": "放射線耐性という",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 16,
+            "max_points": 16
+          },
+          {
+            "id": "u4",
+            "source": "which has been demonstrated",
+            "translation": "これは確認されています",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 11,
+            "max_points": 11
+          },
+          {
+            "id": "u5",
+            "source": "in NbTi magnets used in different colliders",
+            "translation": "異なるコライダーで使用されているNbTiマグネットで",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 11,
+            "max_points": 11
+          },
+          {
+            "id": "u6",
+            "source": "such as the Tevatron [4], HERA [5], and LHC [6]",
+            "translation": "Tevatron[4]、HERA[5]、LHC[6]など",
+            "importance": "detail",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 5,
+            "max_points": 5
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 54,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 84,
+          "total": 84,
+          "cap_reason": "主要意味単位の欠落があるため、総合点は84点以下です。"
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な日本語表現。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "disagreement",
+          "translation": "NbTi SCUの永久磁石ベースのアンデュレーターに対するもう一つの利点は放射線の強度であり、これはTevatron[4]、HERA[5]、LHC[6]など様々な加速器で数十年にわたり実証されています。",
+          "message": "「放射線の強度」は原文の「radiation hardness」の誤訳であり、文意が異なる。",
+          "month_usage": 23853,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "expect": {
+        "min_score": 85,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      }
+    },
+    {
+      "id": "blind5_casalbuoni2023_awkward_09",
+      "source_text": "The choice of the undulator period is driven by the selected photon energy range and can be made once the electron energy is fixed.",
+      "user_answer": "アンジュレータ周期を選定することは、選択された光子エネルギー範囲によって決定されることになっており、電子エネルギーが決まった後に選ぶことが可能となることができる。",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 96,
+        "feedback": "「and can be made once the electron energy is fixed」の意味は一部保持されていますが、関係を明確にしてください。基準: 、電子エネルギーが固定された後に決定できます",
+        "reference_translation": "アンジュレータ周期の選択は、選択した光子エネルギー範囲によって決まり、電子エネルギーが固定された後に決定できます。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "電子エネルギーが固定された後に決定できます",
+            "message": "冗長",
+            "suggestion": "電子エネルギーが決まった後に選べる"
+          },
+          {
+            "category": "wording",
+            "source_span": "and can be made once the electron energy is fixed",
+            "message": "この意味単位は概ね保持されていますが、表現または対応関係に改善余地があります。",
+            "suggestion": "、電子エネルギーが固定された後に決定できます"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "The choice of the undulator period",
+            "translation": "アンジュレータ周期の選択",
+            "status": "correct"
+          },
+          {
+            "source": "is driven by the selected photon energy range",
+            "translation": "は選択した光子エネルギー範囲によって決まり",
+            "status": "correct"
+          },
+          {
+            "source": "and can be made once the electron energy is fixed",
+            "translation": "、電子エネルギーが固定された後に決定できます",
+            "status": "warning"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "The choice of the undulator period",
+            "translation": "アンジュレータ周期の選択",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 24,
+            "max_points": 24
+          },
+          {
+            "id": "u2",
+            "source": "is driven by the selected photon energy range",
+            "translation": "は選択した光子エネルギー範囲によって決まり",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 23,
+            "max_points": 23
+          },
+          {
+            "id": "u3",
+            "source": "and can be made once the electron energy is fixed",
+            "translation": "、電子エネルギーが固定された後に決定できます",
+            "importance": "core",
+            "status": "partial",
+            "note": "冗長・自然さ欠如",
+            "evidence_span": "選ぶことが可能となることができる",
+            "earned_points": 21,
+            "max_points": 23
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 68,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 96,
+          "total": 96,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "冗長・自然さ欠如 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "アンドレーター周期の選択は、選択した光子のエネルギー範囲によって決まり、電子エネルギーが固定された後に決定できます。",
+          "message": "外部MT監査訳と参考訳は実質同義である。",
+          "month_usage": 24651,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      }
+    },
+    {
+      "id": "blind5_casalbuoni2023_awkward_10",
+      "source_text": "Each SCU module will sit on four cam movers that are remotely controllable.",
+      "user_answer": "各SCUモジュールは、遠隔操作することが可能であることができる4基のカムムーバ上に設置されることになっている。",
+      "evaluation": {
+        "verdict": "partial",
+        "score": 77,
+        "feedback": "「that are remotely controllable」の意味関係が原文と異なります。基準: 遠隔操作が可能です",
+        "reference_translation": "各SCUモジュールは4つのカムムーバーの上に設置され、遠隔操作が可能です。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "that are remotely controllable",
+            "message": "自然さと限定の弱さ",
+            "suggestion": "遠隔操作が可能"
+          },
+          {
+            "category": "mistranslation",
+            "source_span": "that are remotely controllable",
+            "message": "冗長で意味不明",
+            "suggestion": "遠隔操作が可能です"
+          },
+          {
+            "category": "wording",
+            "source_span": "will sit on four cam movers",
+            "message": "この意味単位は概ね保持されていますが、表現または対応関係に改善余地があります。",
+            "suggestion": "4つのカムムーバーの上に設置される"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "Each SCU module",
+            "translation": "各SCUモジュール",
+            "status": "correct"
+          },
+          {
+            "source": "will sit on four cam movers",
+            "translation": "4つのカムムーバーの上に設置される",
+            "status": "warning"
+          },
+          {
+            "source": "that are remotely controllable",
+            "translation": "遠隔操作が可能です",
+            "status": "missing"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "Each SCU module",
+            "translation": "各SCUモジュール",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "各SCUモジュール",
+            "earned_points": 26,
+            "max_points": 26
+          },
+          {
+            "id": "u2",
+            "source": "will sit on four cam movers",
+            "translation": "4つのカムムーバーの上に設置される",
+            "importance": "core",
+            "status": "partial",
+            "note": "自然さと限定の弱さ",
+            "evidence_span": "4基のカムムーバ上に設置されることになっている",
+            "earned_points": 23,
+            "max_points": 26
+          },
+          {
+            "id": "u3",
+            "source": "that are remotely controllable",
+            "translation": "遠隔操作が可能です",
+            "importance": "support",
+            "status": "wrong",
+            "note": "冗長で意味不明",
+            "evidence_span": "遠隔操作することが可能であることができる",
+            "earned_points": 0,
+            "max_points": 18
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 49,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 77,
+          "total": 77,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "表現が冗長で自然さに欠ける 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "各SCUモジュールは4つのカムムーバーに搭載され、リモート操作が可能です。",
+          "message": "外部MT監査訳と参考訳は意味整合性がある。",
+          "month_usage": 24781,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      }
+    },
+    {
+      "id": "blind5_casalbuoni2023_awkward_11",
+      "source_text": "The wire has polyvinyl Formvar insulation with a thickness of 0.04 mm and 2,100 filaments with a diameter of 13 µm.",
+      "user_answer": "この線材は厚さ0.04 mmのポリビニルホルマール絶縁を有しているということになっており、直径13 µmのフィラメントを2,100本有しているということになっている。",
+      "evaluation": {
+        "verdict": "incorrect",
+        "score": 59,
+        "feedback": "「polyvinyl Formvar insulation」の意味関係が原文と異なります。基準: ポリビニルフォームバリ絶縁体 日本語品質: 『ということになっている』が同一文で重複しています。数量・構成関係を直接記述してください。",
+        "reference_translation": "このワイヤーは、厚さ0.04mmのポリビニルフォームバリ絶縁体と、直径13μmの2,100本のフィラメントで構成されている。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "mistranslation",
+            "source_span": "polyvinyl Formvar insulation",
+            "message": "絶縁体の名称が誤っている",
+            "suggestion": "ポリビニルフォームバリ絶縁体"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "The wire has",
+            "translation": "このワイヤーは",
+            "status": "correct"
+          },
+          {
+            "source": "polyvinyl Formvar insulation",
+            "translation": "ポリビニルフォームバリ絶縁体",
+            "status": "missing"
+          },
+          {
+            "source": "with a thickness of 0.04 mm",
+            "translation": "厚さ0.04mm",
+            "status": "correct"
+          },
+          {
+            "source": "and 2,100 filaments",
+            "translation": "2,100本のフィラメント",
+            "status": "correct"
+          },
+          {
+            "source": "with a diameter of 13 µm",
+            "translation": "直径13μm",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "The wire has",
+            "translation": "このワイヤーは",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "この線材は",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u2",
+            "source": "polyvinyl Formvar insulation",
+            "translation": "ポリビニルフォームバリ絶縁体",
+            "importance": "core",
+            "status": "wrong",
+            "note": "絶縁体の名称が誤っている",
+            "evidence_span": "ポリビニルホルマール絶縁",
+            "earned_points": 0,
+            "max_points": 19
+          },
+          {
+            "id": "u3",
+            "source": "with a thickness of 0.04 mm",
+            "translation": "厚さ0.04mm",
+            "importance": "detail",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "厚さ0.04 mm",
+            "earned_points": 7,
+            "max_points": 7
+          },
+          {
+            "id": "u4",
+            "source": "and 2,100 filaments",
+            "translation": "2,100本のフィラメント",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u5",
+            "source": "with a diameter of 13 µm",
+            "translation": "直径13μm",
+            "importance": "detail",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "直径13 µm",
+            "earned_points": 6,
+            "max_points": 6
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 51,
+          "terminology": 15,
+          "japanese": 10,
+          "raw_total": 76,
+          "total": 59,
+          "cap_reason": "主要意味単位の重大誤訳、または確認済みの構文上の誤りがあるため、総合点は59点以下です。"
+        },
+        "japanese_quality": {
+          "level": "awkward",
+          "note": "表現が冗長で自然さに欠ける"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "この線材は厚さ0.04mmのポリビニールFormvar絶縁材と直径13μmの2,100本のフィラメントで構成されています。",
+          "message": "外部MT監査訳と参考訳は意味的に一致している。",
+          "month_usage": 24979,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      }
+    },
+    {
+      "id": "blind5_casalbuoni2023_awkward_12",
+      "source_text": "The quench detection is based on the balanced voltage principle.",
+      "user_answer": "クエンチ検出は平衡電圧の原理に基づいて行われることが実施される。",
+      "evaluation": {
+        "verdict": "incorrect",
+        "score": 59,
+        "feedback": "「the balanced voltage principle」の意味関係が原文と異なります。基準: バランス電圧原理",
+        "reference_translation": "クエンチ検出はバランス電圧原理に基づいています。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "is based on",
+            "message": "冗長表現",
+            "suggestion": "は...に基づいています"
+          },
+          {
+            "category": "mistranslation",
+            "source_span": "balanced voltage principle",
+            "message": "balance と equilibrium は異なる",
+            "suggestion": "バランス電圧原理"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "The quench detection",
+            "translation": "クエンチ検出",
+            "status": "correct"
+          },
+          {
+            "source": "is based on",
+            "translation": "は...に基づいています",
+            "status": "warning"
+          },
+          {
+            "source": "the balanced voltage principle",
+            "translation": "バランス電圧原理",
+            "status": "missing"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "The quench detection",
+            "translation": "クエンチ検出",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "クエンチ検出",
+            "earned_points": 24,
+            "max_points": 24
+          },
+          {
+            "id": "u2",
+            "source": "is based on",
+            "translation": "は...に基づいています",
+            "importance": "core",
+            "status": "partial",
+            "note": "冗長で自然さ欠如",
+            "evidence_span": "に基づいて行われることが実施される",
+            "earned_points": 21,
+            "max_points": 23
+          },
+          {
+            "id": "u3",
+            "source": "the balanced voltage principle",
+            "translation": "バランス電圧原理",
+            "importance": "core",
+            "status": "wrong",
+            "note": "balance と equilibrium は異なる概念",
+            "evidence_span": "平衡電圧の原理",
+            "earned_points": 0,
+            "max_points": 23
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 45,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 73,
+          "total": 59,
+          "cap_reason": "主要意味単位の重大誤訳、または確認済みの構文上の誤りがあるため、総合点は59点以下です。"
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "冗長で自然さ欠如 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "クエンチ検出はバランス電圧原理に基づいています。",
+          "message": "外部MT監査訳と参考訳が一致しています。",
+          "month_usage": 25075,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      }
+    },
+    {
+      "id": "blind5_casalbuoni2023_omission_13",
+      "source_text": "By cooling the magnets to approximately 100 K, their remanence increases and so does the peak field on the magnetic axis.",
+      "user_answer": "磁石を冷却すると残留磁化が増加し、磁気軸上のピーク磁場も増大する。",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 100,
+        "feedback": "原文の主要な意味単位は訳文に保持されています。",
+        "reference_translation": "磁石を約100Kまで冷却することで、磁石の残留磁束密度が上昇し、磁気軸上のピーク磁界も上昇します。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [],
+        "key_points": [
+          {
+            "source": "By cooling the magnets to approximately 100 K",
+            "translation": "磁石を約100Kまで冷却することで",
+            "status": "correct"
+          },
+          {
+            "source": "their remanence increases",
+            "translation": "磁石の残留磁束密度が上昇し",
+            "status": "correct"
+          },
+          {
+            "source": "so does the peak field on the magnetic axis",
+            "translation": "磁気軸上のピーク磁界も上昇します",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "By cooling the magnets to approximately 100 K",
+            "translation": "磁石を約100Kまで冷却することで",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "磁石を冷却すると",
+            "earned_points": 18,
+            "max_points": 18
+          },
+          {
+            "id": "u2",
+            "source": "their remanence increases",
+            "translation": "磁石の残留磁束密度が上昇し",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "残留磁化が増加し",
+            "earned_points": 26,
+            "max_points": 26
+          },
+          {
+            "id": "u3",
+            "source": "so does the peak field on the magnetic axis",
+            "translation": "磁気軸上のピーク磁界も上昇します",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "磁気軸上のピーク磁場も増大する",
+            "earned_points": 26,
+            "max_points": 26
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 70,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 100,
+          "total": 100,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な表現で、意味も正確に伝わっている。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "磁石を約100Kまで冷却することで、磁気の残留量が増加し、磁軸上のピーク場も増加します。",
+          "message": "外部MT監査訳と参考訳は実質同義です。",
+          "month_usage": 25229,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "expect": {
+        "min_score": 0,
+        "max_score": 89,
+        "must_have_noncorrect": true,
+        "must_have_missing": true
+      }
+    },
+    {
+      "id": "blind5_casalbuoni2023_omission_14",
+      "source_text": "There are two hard X-ray lines and a soft X-ray line named SASE1, SASE2, and SASE3, respectively.",
+      "user_answer": "この施設にはSASE1とSASE2という硬X線ビームラインが2本ある。",
+      "evaluation": {
+        "verdict": "incorrect",
+        "score": 54,
+        "feedback": "「and a soft X-ray line」の意味関係が原文と異なります。基準: と、軟X線",
+        "reference_translation": "硬X線は2本と、軟X線はSASE1、SASE2、SASE3と名付けられている。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "mistranslation",
+            "source_span": "named SASE1, SASE2, and SASE3, respectively",
+            "message": "SASE3の漏れ",
+            "suggestion": "SASE1、SASE2、SASE3と明記"
+          },
+          {
+            "category": "mistranslation",
+            "source_span": "and a soft X-ray line",
+            "message": "軟X線の線が欠落",
+            "suggestion": "と、軟X線"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "There are two hard X-ray lines",
+            "translation": "硬X線は2本",
+            "status": "correct"
+          },
+          {
+            "source": "and a soft X-ray line",
+            "translation": "と、軟X線",
+            "status": "missing"
+          },
+          {
+            "source": "named SASE1, SASE2, and SASE3, respectively",
+            "translation": "はそれぞれSASE1、SASE2、SASE3と名付けられている",
+            "status": "missing"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "There are two hard X-ray lines",
+            "translation": "硬X線は2本",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 26,
+            "max_points": 26
+          },
+          {
+            "id": "u2",
+            "source": "and a soft X-ray line",
+            "translation": "と、軟X線",
+            "importance": "core",
+            "status": "wrong",
+            "note": "軟X線の線が欠落",
+            "evidence_span": "",
+            "earned_points": 0,
+            "max_points": 26
+          },
+          {
+            "id": "u3",
+            "source": "named SASE1, SASE2, and SASE3, respectively",
+            "translation": "はそれぞれSASE1、SASE2、SASE3と名付けられている",
+            "importance": "support",
+            "status": "wrong",
+            "note": "SASE3が漏れ、2本と誤解",
+            "evidence_span": "",
+            "earned_points": 0,
+            "max_points": 18
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 26,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 54,
+          "total": 54,
+          "cap_reason": "主要意味単位の重大誤訳、または確認済みの構文上の誤りがあるため、総合点は59点以下です。"
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "語順や表現が自然でない 日本語品質コメントが自然さの改善余地を明示しています。 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "disagreement",
+          "translation": "硬X線線は2本、軟X線線はそれぞれSASE1、SASE2、SASE3と呼ばれています。",
+          "message": "硬X線の数が一致しない。",
+          "month_usage": 25361,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "expect": {
+        "min_score": 0,
+        "max_score": 89,
+        "must_have_noncorrect": true,
+        "must_have_missing": true
+      }
+    },
+    {
+      "id": "blind5_casalbuoni2023_reversal_24",
+      "source_text": "SUNDAE1 is a vertical cryostat to test SCU coils up to 2 m long in liquid and superfluid helium at 4 K and 2 K, respectively.",
+      "user_answer": "SUNDAE1は長さ2 mまでのSCUコイルを、液体ヘリウム2 Kおよび超流動ヘリウム4 Kでそれぞれ試験する縦型クライオスタットである。",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 99,
+        "feedback": "「at 4 K and 2 K, respectively」の意味は一部保持されていますが、関係を明確にしてください。基準: それぞれ4Kと2Kで",
+        "reference_translation": "SUNDAE1は、液体ヘリウムと超流動ヘリウムで最大2メートルの長さのSCUコイルをそれぞれ4Kと2Kで試験する垂直クライオスタットです。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "liquid and superfluid helium at 4 K and 2 K, respectively",
+            "message": "「それぞれ」の関係が不明確",
+            "suggestion": "「4Kで液体ヘリウム、2Kで超流動ヘリウム」"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "SUNDAE1",
+            "translation": "SUNDAE1",
+            "status": "correct"
+          },
+          {
+            "source": "is a vertical cryostat",
+            "translation": "垂直クライオスタットです",
+            "status": "correct"
+          },
+          {
+            "source": "to test SCU coils",
+            "translation": "試験するための",
+            "status": "correct"
+          },
+          {
+            "source": "up to 2 m long",
+            "translation": "最大2メートルの長さ",
+            "status": "correct"
+          },
+          {
+            "source": "in liquid and superfluid helium",
+            "translation": "液体ヘリウムと超流動ヘリウムで",
+            "status": "warning"
+          },
+          {
+            "source": "at 4 K and 2 K, respectively",
+            "translation": "それぞれ4Kと2Kで",
+            "status": "warning"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "SUNDAE1",
+            "translation": "SUNDAE1",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "SUNDAE1",
+            "earned_points": 14,
+            "max_points": 14
+          },
+          {
+            "id": "u2",
+            "source": "is a vertical cryostat",
+            "translation": "垂直クライオスタットです",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "縦型クライオスタットである",
+            "earned_points": 14,
+            "max_points": 14
+          },
+          {
+            "id": "u3",
+            "source": "to test SCU coils",
+            "translation": "試験するための",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "試験する",
+            "earned_points": 14,
+            "max_points": 14
+          },
+          {
+            "id": "u4",
+            "source": "up to 2 m long",
+            "translation": "最大2メートルの長さ",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "長さ2 mまでの",
+            "earned_points": 10,
+            "max_points": 10
+          },
+          {
+            "id": "u5",
+            "source": "in liquid and superfluid helium",
+            "translation": "液体ヘリウムと超流動ヘリウムで",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "液体ヘリウム2 Kおよび超流動ヘリウム4 K",
+            "earned_points": 9,
+            "max_points": 9
+          },
+          {
+            "id": "u6",
+            "source": "at 4 K and 2 K, respectively",
+            "translation": "それぞれ4Kと2Kで",
+            "importance": "support",
+            "status": "partial",
+            "note": "「それぞれ」の関係が不明確",
+            "evidence_span": "それぞれ",
+            "earned_points": 8,
+            "max_points": 9
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 69,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 99,
+          "total": 99,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な日本語表現。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "SUNDAE1は、液体ヘリウムおよび超流動ヘリウムで最大2mまでのSCUコイルをそれぞれ4Kおよび2Kで試験するための垂直クライオスタットです。",
+          "message": "外部MT監査訳と参考訳は実質同義です。",
+          "month_usage": 27070,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "expect": {
+        "min_score": 0,
+        "max_score": 59,
+        "must_have_material_issue": true,
+        "must_have_noncorrect": true
+      }
+    }
+  ]
+}

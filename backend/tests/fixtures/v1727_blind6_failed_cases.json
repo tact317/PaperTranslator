@@ -1,0 +1,964 @@
+{
+  "metadata": {
+    "origin": "POST-HOC after blind6 failure on v1.7.26",
+    "expected_cases": 7,
+    "source_doi": "10.1109/TASC.2023.3293449"
+  },
+  "cases": [
+    {
+      "id": "blind6_arsenault2023_natural_03",
+      "base_id": "arsenault2023_p3_03",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "natural",
+        "axisymmetric model and elements"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 3,
+      "variant": "natural",
+      "source_text": "All models were implemented with first order shape functions in a 2-D axisymmetric geometry.",
+      "user_answer": "すべてのモデルを、一次形状関数を用いた2次元軸対称形状で実装した。",
+      "expect": {
+        "min_score": 95,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      },
+      "case_rationale": "Preserves first-order interpolation and 2-D axisymmetry.",
+      "evaluation": {
+        "verdict": "partial",
+        "score": 84,
+        "feedback": "「in a 2-D axisymmetric geometry」の意味関係が原文と異なります。基準: 2次元軸対称幾何学において",
+        "reference_translation": "すべてのモデルは2次元軸対称幾何学において一次形状関数で実装された。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "mistranslation",
+            "source_span": "in a 2-D axisymmetric geometry",
+            "message": "2次元軸対称形状と訳すと意味が異なる",
+            "suggestion": "2次元軸対称幾何学で"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "All models",
+            "translation": "すべてのモデル",
+            "status": "correct"
+          },
+          {
+            "source": "were implemented",
+            "translation": "実装された",
+            "status": "correct"
+          },
+          {
+            "source": "with first order shape functions",
+            "translation": "一次形状関数で",
+            "status": "correct"
+          },
+          {
+            "source": "in a 2-D axisymmetric geometry",
+            "translation": "2次元軸対称幾何学において",
+            "status": "missing"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "All models",
+            "translation": "すべてのモデル",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "すべてのモデル",
+            "earned_points": 21,
+            "max_points": 21
+          },
+          {
+            "id": "u2",
+            "source": "were implemented",
+            "translation": "実装された",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 21,
+            "max_points": 21
+          },
+          {
+            "id": "u3",
+            "source": "with first order shape functions",
+            "translation": "一次形状関数で",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 14,
+            "max_points": 14
+          },
+          {
+            "id": "u4",
+            "source": "in a 2-D axisymmetric geometry",
+            "translation": "2次元軸対称幾何学において",
+            "importance": "support",
+            "status": "wrong",
+            "note": "2次元軸対称幾何学と意味が異なる",
+            "evidence_span": "2次元軸対称形状",
+            "earned_points": 0,
+            "max_points": 14
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 56,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 86,
+          "total": 84,
+          "cap_reason": "科学的な数量・倍率・範囲の明確な誤りがあるため、総合点は84点以下です。"
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な日本語表現"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "すべてのモデルは2次元軸対称幾何学における一次形状関数で実装されていました。",
+          "message": "外部MT監査訳と参考訳は意味整合性がある。",
+          "month_usage": 27434,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation"
+    },
+    {
+      "id": "blind6_arsenault2023_paraphrase_07",
+      "base_id": "arsenault2023_p4_07",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "paraphrase",
+        "efficiency at equal accuracy"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 4,
+      "variant": "paraphrase",
+      "source_text": "The most accurate solution is obtained with approximately half the number of DOFs and a quarter of the simulation time using the H–φ/D formulation compared to the full H formulation.",
+      "user_answer": "完全H定式化と比較すると、H–φ/D定式化では自由度を約半分、計算時間を約4分の1にしながら、最も精度の高い解を得られる。",
+      "expect": {
+        "min_score": 85,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      },
+      "case_rationale": "Maintains both numerical ratios with the correct baseline.",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 88,
+        "feedback": "「with approximately half the number of DOFs」に対応する意味が訳文から抜けています。基準: 自由度（DOF）が約半分",
+        "reference_translation": "最も正確な解は、H–φ/D定式を用いて、完全なH定式に比べて自由度（DOF）が約半分、シミュレーション時間が4分の1で得られます。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "H–φ/D定式を用いて",
+            "message": "「H–φ/D定式を用いて」の位置が模範訳と異なる",
+            "suggestion": "「H–φ/D定式を用いて」を文頭に移動"
+          },
+          {
+            "category": "omission",
+            "source_span": "with approximately half the number of DOFs",
+            "message": "この意味単位に対応する内容が訳文から欠落しています。",
+            "suggestion": "自由度（DOF）が約半分"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "The most accurate solution",
+            "translation": "最も正確な解",
+            "status": "correct"
+          },
+          {
+            "source": "is obtained",
+            "translation": "得られます",
+            "status": "correct"
+          },
+          {
+            "source": "with approximately half the number of DOFs",
+            "translation": "自由度（DOF）が約半分",
+            "status": "missing"
+          },
+          {
+            "source": "and a quarter of the simulation time",
+            "translation": "シミュレーション時間が4分の1",
+            "status": "correct"
+          },
+          {
+            "source": "using the H–φ/D formulation",
+            "translation": "H–φ/D定式を用いて",
+            "status": "correct"
+          },
+          {
+            "source": "compared to the full H formulation",
+            "translation": "完全なH定式に比べて",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "The most accurate solution",
+            "translation": "最も正確な解",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 15,
+            "max_points": 15
+          },
+          {
+            "id": "u2",
+            "source": "is obtained",
+            "translation": "得られます",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "得られる",
+            "earned_points": 15,
+            "max_points": 15
+          },
+          {
+            "id": "u3",
+            "source": "with approximately half the number of DOFs",
+            "translation": "自由度（DOF）が約半分",
+            "importance": "support",
+            "status": "missing",
+            "note": "意味存在監査: この意味単位を識別する内容語がユーザー訳の逆翻訳にほぼ残っておらず、単位全体の欠落と判定しました。",
+            "evidence_span": "",
+            "earned_points": 0,
+            "max_points": 10
+          },
+          {
+            "id": "u4",
+            "source": "and a quarter of the simulation time",
+            "translation": "シミュレーション時間が4分の1",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 10,
+            "max_points": 10
+          },
+          {
+            "id": "u5",
+            "source": "using the H–φ/D formulation",
+            "translation": "H–φ/D定式を用いて",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 10,
+            "max_points": 10
+          },
+          {
+            "id": "u6",
+            "source": "compared to the full H formulation",
+            "translation": "完全なH定式に比べて",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 10,
+            "max_points": 10
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 60,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 88,
+          "total": 88,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "文全体の意味は理解できるが、表現の自然さに若干の改善余地あり。 日本語品質コメントが自然さの改善余地を明示しています。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "最も正確な解は、H–φ/D定式式を用いて、完全なH定式に比べてDOF数が約半分で、シミュレーション時間を4分の1で得られます。",
+          "message": "外部MT監査訳と参考訳は意味的に一致しています。",
+          "month_usage": 28285,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation"
+    },
+    {
+      "id": "blind6_arsenault2023_awkward_09",
+      "base_id": "arsenault2023_p1_09",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "awkward",
+        "repeated necessity wording"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 1,
+      "variant": "awkward",
+      "source_text": "However, although the simulations were much faster, high-order shape functions were required in the H–φ formulation in order to obtain similar accuracy between the two formulations.",
+      "user_answer": "しかしシミュレーションはかなり高速だったにもかかわらず、2つの定式化で同程度の精度を得るためには、H–φ定式化で高次形状関数を使用することが必要となることが必要であった。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Meaning retained; redundant doubled necessity construction is awkward.",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 98,
+        "feedback": "原文の主要な意味は保持されています。日本語品質: 表現が冗長で自然さに欠ける 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。",
+        "reference_translation": "しかし、シミュレーションははるかに高速だったが、H–φ定式化では高次の形状関数が必要となり、両形式で同様の精度を得るために高次の形状関数が必要だった。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "2つの定式化で同程度の精度を得るためには",
+            "message": "表現が冗長",
+            "suggestion": "同様の精度を得るために"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "However, although the simulations were much faster",
+            "translation": "しかし、シミュレーションははるかに高速だったが",
+            "status": "correct"
+          },
+          {
+            "source": "high-order shape functions were required",
+            "translation": "高次の形状関数が必要だった",
+            "status": "correct"
+          },
+          {
+            "source": "in the H–φ formulation",
+            "translation": "H–φ定式化では",
+            "status": "correct"
+          },
+          {
+            "source": "in order to obtain similar accuracy",
+            "translation": "同様の精度を得るために",
+            "status": "correct"
+          },
+          {
+            "source": "between the two formulations",
+            "translation": "両形式で",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "However, although the simulations were much faster",
+            "translation": "しかし、シミュレーションははるかに高速だったが",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "しかしシミュレーションはかなり高速だったにもかかわらず",
+            "earned_points": 17,
+            "max_points": 17
+          },
+          {
+            "id": "u2",
+            "source": "high-order shape functions were required",
+            "translation": "高次の形状関数が必要だった",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "高次形状関数を使用することが必要となることが必要であった",
+            "earned_points": 17,
+            "max_points": 17
+          },
+          {
+            "id": "u3",
+            "source": "in the H–φ formulation",
+            "translation": "H–φ定式化では",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "H–φ定式化で",
+            "earned_points": 12,
+            "max_points": 12
+          },
+          {
+            "id": "u4",
+            "source": "in order to obtain similar accuracy",
+            "translation": "同様の精度を得るために",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "2つの定式化で同程度の精度を得るためには",
+            "earned_points": 12,
+            "max_points": 12
+          },
+          {
+            "id": "u5",
+            "source": "between the two formulations",
+            "translation": "両形式で",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 12,
+            "max_points": 12
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 70,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 98,
+          "total": 98,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "表現が冗長で自然さに欠ける 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "しかし、シミュレーションははるかに高速でしたが、H–φ定式化では両形式で同様の精度を得るために高次の形状関数が必要でした。",
+          "message": "外部MT監査訳と参考訳は意味整合性がある。",
+          "month_usage": 28885,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation"
+    },
+    {
+      "id": "blind6_arsenault2023_awkward_10",
+      "base_id": "arsenault2023_p3_10",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "awkward",
+        "finding performed wording"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 3,
+      "variant": "awkward",
+      "source_text": "We find excellent qualitative agreement between all simulations.",
+      "user_answer": "すべてのシミュレーションの間に、優れた定性的な一致があるということを見いだすことが行われた。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Meaning retained; artificial nominalization and performed-finding construction.",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 98,
+        "feedback": "原文の主要な意味は保持されています。日本語品質: 冗長で自然さに欠ける表現 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。",
+        "reference_translation": "すべてのシミュレーションにおいて優れた質的一致が見られます。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [],
+        "key_points": [
+          {
+            "source": "We find excellent qualitative agreement",
+            "translation": "優れた質的一致が見られます",
+            "status": "correct"
+          },
+          {
+            "source": "between all simulations",
+            "translation": "すべてのシミュレーションにおいて",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "We find excellent qualitative agreement",
+            "translation": "優れた質的一致が見られます",
+            "importance": "core",
+            "status": "correct",
+            "note": "独立逆翻訳監査で原文の主要概念と関係が十分保持されているため、表現差による減点を解除しました。",
+            "evidence_span": "優れた定性的な一致があるということを見いだすことが行われた",
+            "earned_points": 42,
+            "max_points": 42
+          },
+          {
+            "id": "u2",
+            "source": "between all simulations",
+            "translation": "すべてのシミュレーションにおいて",
+            "importance": "support",
+            "status": "correct",
+            "note": "独立逆翻訳監査で原文の主要概念と関係が十分保持されているため、表現差による減点を解除しました。",
+            "evidence_span": "すべてのシミュレーションの間に",
+            "earned_points": 28,
+            "max_points": 28
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 70,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 98,
+          "total": 98,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "冗長で自然さに欠ける表現 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "すべてのシミュレーション間で優れた質的一致が見られます。",
+          "message": "文の意味は一致しています。",
+          "month_usage": 28995,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation"
+    },
+    {
+      "id": "blind6_arsenault2023_awkward_11",
+      "base_id": "arsenault2023_p4_11",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "awkward",
+        "double finding wording"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 4,
+      "variant": "awkward",
+      "source_text": "We find that the H and H–φ/D formulations converge at approximately the same rate and to the same value.",
+      "user_answer": "H定式化とH–φ/D定式化が、おおむね同じ速度で同じ値へ収束するということが見いだされることになったということである。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Technical content correct; layered Japanese evidential and nominalizing expressions.",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 100,
+        "feedback": "原文の主要な意味単位は訳文に保持されています。",
+        "reference_translation": "HとH–φ/Dの定式化はほぼ同じ速度で同じ値に収束することがわかった。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [],
+        "key_points": [
+          {
+            "source": "We find that",
+            "translation": "わかった",
+            "status": "correct"
+          },
+          {
+            "source": "the H and H–φ/D formulations",
+            "translation": "HとH–φ/Dの定式化",
+            "status": "correct"
+          },
+          {
+            "source": "converge",
+            "translation": "収束する",
+            "status": "correct"
+          },
+          {
+            "source": "at approximately the same rate",
+            "translation": "ほぼ同じ速度で",
+            "status": "correct"
+          },
+          {
+            "source": "and to the same value",
+            "translation": "同じ値に",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "We find that",
+            "translation": "わかった",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 16,
+            "max_points": 16
+          },
+          {
+            "id": "u2",
+            "source": "the H and H–φ/D formulations",
+            "translation": "HとH–φ/Dの定式化",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "H定式化とH–φ/D定式化",
+            "earned_points": 16,
+            "max_points": 16
+          },
+          {
+            "id": "u3",
+            "source": "converge",
+            "translation": "収束する",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "収束する",
+            "earned_points": 16,
+            "max_points": 16
+          },
+          {
+            "id": "u4",
+            "source": "at approximately the same rate",
+            "translation": "ほぼ同じ速度で",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "おおむね同じ速度で",
+            "earned_points": 11,
+            "max_points": 11
+          },
+          {
+            "id": "u5",
+            "source": "and to the same value",
+            "translation": "同じ値に",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "同じ値へ",
+            "earned_points": 11,
+            "max_points": 11
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 70,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 100,
+          "total": 100,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な表現で意味を正確に伝えており、問題なし。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "HとH–φ/Dの定式化はほぼ同じ速度で同じ値に収束することがわかります。",
+          "message": "外部MT監査訳と参考訳は意味が一致している。",
+          "month_usage": 29158,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation"
+    },
+    {
+      "id": "blind6_arsenault2023_awkward_12",
+      "base_id": "arsenault2023_p5_12",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "awkward",
+        "repeated demonstration wording"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 5,
+      "variant": "awkward",
+      "source_text": "The H–φ/D formulation still converges almost to the same results as the full H formulation, as it is shown by the relative error in Fig. 5(c) being very small.",
+      "user_answer": "H–φ/D定式化が完全H定式化とほぼ同じ結果に収束するということは、図5(c)の相対誤差が非常に小さいことによって示されているということが示されることになる。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Contains repeated shown-that construction but no reversed meaning.",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 98,
+        "feedback": "原文の主要な意味は保持されています。日本語品質: 表現が冗長で自然さに欠ける 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。",
+        "reference_translation": "H–φ/D定式化は、図5(c)の相対誤差が非常に小さいことから、完全なH定式化とほぼ同じ結果に収束します。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "H–φ/D formulation",
+            "message": "表現が冗長",
+            "suggestion": "簡潔に"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "The H–φ/D formulation",
+            "translation": "H–φ/D定式化",
+            "status": "warning"
+          },
+          {
+            "source": "still converges almost to the same results",
+            "translation": "ほぼ同じ結果に収束します",
+            "status": "correct"
+          },
+          {
+            "source": "as the full H formulation",
+            "translation": "完全なH定式化",
+            "status": "correct"
+          },
+          {
+            "source": "as it is shown by the relative error in Fig. 5(c)",
+            "translation": "図5(c)の相対誤差が非常に小さいことから示されているように",
+            "status": "correct"
+          },
+          {
+            "source": "being very small",
+            "translation": "非常に小さい",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "The H–φ/D formulation",
+            "translation": "H–φ/D定式化",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "H–φ/D定式化",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u2",
+            "source": "still converges almost to the same results",
+            "translation": "ほぼ同じ結果に収束します",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u3",
+            "source": "as the full H formulation",
+            "translation": "完全なH定式化",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "完全H定式化",
+            "earned_points": 13,
+            "max_points": 13
+          },
+          {
+            "id": "u4",
+            "source": "as it is shown by the relative error in Fig. 5(c)",
+            "translation": "図5(c)の相対誤差が非常に小さいことから示されているように",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 13,
+            "max_points": 13
+          },
+          {
+            "id": "u5",
+            "source": "being very small",
+            "translation": "非常に小さい",
+            "importance": "detail",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "非常に小さい",
+            "earned_points": 6,
+            "max_points": 6
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 70,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 98,
+          "total": 98,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "表現が冗長で自然さに欠ける 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "H–φ/D定式化は、図5(c)の相対誤差が非常に小さいことから示されているように、完全なH定式化とほぼ同じ結果に収束します。",
+          "message": "外部MT監査訳と参考訳は意味整合性があり、表現の違いは学習上の正解に影響しない。",
+          "month_usage": 29396,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation"
+    },
+    {
+      "id": "blind6_arsenault2023_omission_14",
+      "base_id": "arsenault2023_p2_14",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "omission",
+        "air resistivity setting omitted"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 2,
+      "variant": "omission",
+      "source_text": "When modeling materials with very low resistivities such as HTSs, it is customary to set the resistivity in air domains to 1 Ω·m in order to avoid spurious currents and have reasonable convergence [8], [9].",
+      "user_answer": "HTSのような低抵抗率の材料をモデル化する際は、不要な電流を避け適切な収束性を得るため、空気領域に抵抗率を設定するのが一般的である。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 89,
+        "must_have_noncorrect": true,
+        "must_have_missing": true
+      },
+      "case_rationale": "The mandatory numeric setting 1 ohm-meter is removed.",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 98,
+        "feedback": "「in order to avoid spurious currents and have reasonable convergence」の意味は一部保持されていますが、関係を明確にしてください。基準: 誤導電流を避けて合理的な収束を得るために",
+        "reference_translation": "非常に低い抵抗率を持つ材料（HTSなど）をモデル化する際、誤導電流を避けて合理的な収束を得るために、空気領域の抵抗率を1 Ω·mに設定するのが一般的である。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "in order to avoid spurious currents",
+            "message": "「誤導電流」が「不要な電流」に変化",
+            "suggestion": "「誤導電流」"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "When modeling materials with very low resistivities such as HTSs",
+            "translation": "非常に低い抵抗率を持つ材料（HTSなど）をモデル化する際",
+            "status": "correct"
+          },
+          {
+            "source": "it is customary to set the resistivity in air domains to 1 Ω·m",
+            "translation": "空気領域の抵抗率を1 Ω·mに設定するのが一般的である",
+            "status": "correct"
+          },
+          {
+            "source": "in order to avoid spurious currents and have reasonable convergence",
+            "translation": "誤導電流を避けて合理的な収束を得るために",
+            "status": "warning"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "When modeling materials with very low resistivities such as HTSs",
+            "translation": "非常に低い抵抗率を持つ材料（HTSなど）をモデル化する際",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "HTSのような低抵抗率の材料をモデル化する際は",
+            "earned_points": 26,
+            "max_points": 26
+          },
+          {
+            "id": "u2",
+            "source": "it is customary to set the resistivity in air domains to 1 Ω·m",
+            "translation": "空気領域の抵抗率を1 Ω·mに設定するのが一般的である",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "空気領域に抵抗率を設定するのが一般的である",
+            "earned_points": 26,
+            "max_points": 26
+          },
+          {
+            "id": "u3",
+            "source": "in order to avoid spurious currents and have reasonable convergence",
+            "translation": "誤導電流を避けて合理的な収束を得るために",
+            "importance": "support",
+            "status": "partial",
+            "note": "「誤導電流」が「不要な電流」に変化",
+            "evidence_span": "不要な電流を避け適切な収束性を得るため",
+            "earned_points": 16,
+            "max_points": 18
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 68,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 98,
+          "total": 98,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な日本語表現。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "HTSのように非常に低い抵抗率を持つ材料をモデル化する際は、誤導電流を避け合理的な収束を得るために空気領域の抵抗率を1 Ω·mに設定するのが一般的です[8], [9]。",
+          "message": "外部MT監査訳と参考訳は意味が一致している。",
+          "month_usage": 29902,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation"
+    }
+  ]
+}

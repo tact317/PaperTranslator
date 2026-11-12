@@ -1,0 +1,521 @@
+{
+  "source": "20261009 blind3 v1.7.23 fresh validation: 5 observed failures",
+  "cases": [
+    {
+      "id": "blind3_richter2021_paraphrase_07",
+      "source_text": "To ensure a total liquid nitrogen coverage in the bend region, a waved surface was added where the conductor tape touches the body.",
+      "user_answer": "曲げ部分が液体窒素で十分に覆われるよう、テープと曲げ治具の接触面を波形にした。",
+      "evaluation": {
+        "verdict": "partial",
+        "score": 82,
+        "feedback": "「where the conductor tape touches the body」の意味関係が原文と異なります。基準: 導体テープが本体に接触する部分に",
+        "reference_translation": "曲げ領域に液体窒素の完全な被覆を確保するため、導体テープが本体に接触する部分に波状の表面が追加された。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "mistranslation",
+            "source_span": "where the conductor tape touches the body",
+            "message": "曲げ治具と誤訳",
+            "suggestion": "導体テープが本体に接触する部分"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "To ensure a total liquid nitrogen coverage in the bend region",
+            "translation": "曲げ領域に液体窒素の完全な被覆を確保するため",
+            "status": "correct"
+          },
+          {
+            "source": "a waved surface was added",
+            "translation": "波状の表面が追加された",
+            "status": "correct"
+          },
+          {
+            "source": "where the conductor tape touches the body",
+            "translation": "導体テープが本体に接触する部分に",
+            "status": "missing"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "To ensure a total liquid nitrogen coverage in the bend region",
+            "translation": "曲げ領域に液体窒素の完全な被覆を確保するため",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "曲げ部分が液体窒素で十分に覆われるよう",
+            "earned_points": 26,
+            "max_points": 26
+          },
+          {
+            "id": "u2",
+            "source": "a waved surface was added",
+            "translation": "波状の表面が追加された",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "テープと曲げ治具の接触面を波形にした",
+            "earned_points": 26,
+            "max_points": 26
+          },
+          {
+            "id": "u3",
+            "source": "where the conductor tape touches the body",
+            "translation": "導体テープが本体に接触する部分に",
+            "importance": "support",
+            "status": "wrong",
+            "note": "対象が本体ではなく曲げ治具に変更",
+            "evidence_span": "テープと曲げ治具の接触面",
+            "earned_points": 0,
+            "max_points": 18
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 52,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 82,
+          "total": 82,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な日本語表現。"
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      }
+    },
+    {
+      "id": "blind3_richter2021_awkward_09",
+      "source_text": "To represent magnet winding procedures, the samples were bent at room temperature and then cooled down to T = 77 K in the bent state to test for potential degradation of the superconducting properties.",
+      "user_answer": "磁石の巻線手順を再現するため、試料は室温で曲げられることが行われ、曲げた状態のままT = 77 Kに冷却されることが行われて、超伝導特性の劣化の可能性が試験された。",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 100,
+        "feedback": "原文の主要な意味単位は訳文に保持されています。",
+        "reference_translation": "磁石巻線手順を表すために、試料は室温で曲げられ、曲げた状態で77 Kまで冷却され、超伝導特性の劣化の可能性を検討した。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [],
+        "key_points": [
+          {
+            "source": "To represent magnet winding procedures",
+            "translation": "磁石巻線手順を表すために",
+            "status": "correct"
+          },
+          {
+            "source": "the samples were bent at room temperature",
+            "translation": "試料は室温で曲げられ",
+            "status": "correct"
+          },
+          {
+            "source": "then cooled down to T = 77 K in the bent state",
+            "translation": "曲げた状態で77 Kまで冷却された",
+            "status": "correct"
+          },
+          {
+            "source": "to test for potential degradation of the superconducting properties",
+            "translation": "超伝導特性の劣化の可能性を検討した",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "To represent magnet winding procedures",
+            "translation": "磁石巻線手順を表すために",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "磁石の巻線手順を再現するため",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u2",
+            "source": "the samples were bent at room temperature",
+            "translation": "試料は室温で曲げられ",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "試料は室温で曲げられることが行われ",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u3",
+            "source": "then cooled down to T = 77 K in the bent state",
+            "translation": "曲げた状態で77 Kまで冷却された",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "曲げた状態のままT = 77 Kに冷却されることが行われて",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u4",
+            "source": "to test for potential degradation of the superconducting properties",
+            "translation": "超伝導特性の劣化の可能性を検討した",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "超伝導特性の劣化の可能性が試験された",
+            "earned_points": 13,
+            "max_points": 13
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 70,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 100,
+          "total": 100,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": ""
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      }
+    },
+    {
+      "id": "blind3_richter2021_awkward_10",
+      "source_text": "This bending will induce significant bending strain on the superconducting layer and can harm its conducting properties.",
+      "user_answer": "この曲げによって超伝導層に大きな曲げひずみが誘起されることが起き、その通電特性が損なわれる可能性があり得ることができる。",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 96,
+        "feedback": "「can harm its conducting properties」の意味は一部保持されていますが、関係を明確にしてください。基準: その導電性を害する",
+        "reference_translation": "この曲げは超伝導層に大きな曲げ応力を誘発し、その導電性を害する。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "can harm its conducting properties",
+            "message": "通電特性と導電性の違い",
+            "suggestion": "導電性"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "This bending",
+            "translation": "この曲げ",
+            "status": "correct"
+          },
+          {
+            "source": "will induce significant bending strain",
+            "translation": "大きな曲げ応力を誘発する",
+            "status": "correct"
+          },
+          {
+            "source": "on the superconducting layer",
+            "translation": "超伝導層に",
+            "status": "correct"
+          },
+          {
+            "source": "can harm its conducting properties",
+            "translation": "その導電性を害する",
+            "status": "warning"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "This bending",
+            "translation": "この曲げ",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "この曲げ",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u2",
+            "source": "will induce significant bending strain",
+            "translation": "大きな曲げ応力を誘発する",
+            "importance": "core",
+            "status": "correct",
+            "note": "独立逆翻訳監査で原文の主要概念と関係が十分保持されているため、表現差による減点を解除しました。",
+            "evidence_span": "大きな曲げひずみが誘起されることが起き",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u3",
+            "source": "on the superconducting layer",
+            "translation": "超伝導層に",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "超伝導層に",
+            "earned_points": 13,
+            "max_points": 13
+          },
+          {
+            "id": "u4",
+            "source": "can harm its conducting properties",
+            "translation": "その導電性を害する",
+            "importance": "core",
+            "status": "partial",
+            "note": "可能性があり得るの重複、通電特性と導電性の違い",
+            "evidence_span": "その通電特性が損なわれる可能性があり得ることができる",
+            "earned_points": 17,
+            "max_points": 19
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 68,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 96,
+          "total": 96,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "文法的冗長と重複表現あり 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      }
+    },
+    {
+      "id": "blind3_richter2021_awkward_11",
+      "source_text": "On top, we included two sleeves covering half the sample width to reduce the strain on the s-shaped transition after the copper clamps down to the bending body.",
+      "user_answer": "その上で、銅クランプから曲げ治具までのS字状の移行部におけるひずみを減らすことをするために、試料幅の半分を覆う2個のスリーブを含めることを行った。",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 99,
+        "feedback": "「after the copper clamps down to the bending body」の意味は一部保持されていますが、関係を明確にしてください。基準: 銅のクランプが曲げボディに設置された後の",
+        "reference_translation": "さらに、サンプル幅の半分を覆う2つのスリーブを追加して、銅のクランプが曲げボディに設置された後のS字型の遷移部の応力緩和を図りました。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "after the copper clamps down to the bending body",
+            "message": "この意味単位は概ね保持されていますが、表現または対応関係に改善余地があります。",
+            "suggestion": "銅のクランプが曲げボディに設置された後の"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "On top, we included two sleeves",
+            "translation": "さらに、サンプル幅の半分を覆う2つのスリーブを追加して",
+            "status": "correct"
+          },
+          {
+            "source": "covering half the sample width",
+            "translation": "サンプル幅の半分を覆う",
+            "status": "correct"
+          },
+          {
+            "source": "to reduce the strain",
+            "translation": "応力緩和を図りました",
+            "status": "correct"
+          },
+          {
+            "source": "on the s-shaped transition",
+            "translation": "S字型の遷移部",
+            "status": "correct"
+          },
+          {
+            "source": "after the copper clamps down to the bending body",
+            "translation": "銅のクランプが曲げボディに設置された後の",
+            "status": "warning"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "On top, we included two sleeves",
+            "translation": "さらに、サンプル幅の半分を覆う2つのスリーブを追加して",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 13,
+            "max_points": 13
+          },
+          {
+            "id": "u2",
+            "source": "covering half the sample width",
+            "translation": "サンプル幅の半分を覆う",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 13,
+            "max_points": 13
+          },
+          {
+            "id": "u3",
+            "source": "to reduce the strain",
+            "translation": "応力緩和を図りました",
+            "importance": "core",
+            "status": "correct",
+            "note": "独立逆翻訳監査で原文の主要概念と関係が十分保持されているため、表現差による減点を解除しました。",
+            "evidence_span": "",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u4",
+            "source": "on the s-shaped transition",
+            "translation": "S字型の遷移部",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 13,
+            "max_points": 13
+          },
+          {
+            "id": "u5",
+            "source": "after the copper clamps down to the bending body",
+            "translation": "銅のクランプが曲げボディに設置された後の",
+            "importance": "support",
+            "status": "partial",
+            "note": "対象の表現が限定的",
+            "evidence_span": "銅クランプから曲げ治具までのS字状の移行部",
+            "earned_points": 11,
+            "max_points": 12
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 69,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 99,
+          "total": 99,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な日本語表現。"
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      }
+    },
+    {
+      "id": "blind3_richter2021_awkward_12",
+      "source_text": "We envisage a subsequent experiment investigating full helical bends (three periods) as well as a larger variation of substrate thicknesses and more samples from the same manufacturer.",
+      "user_answer": "我々は今後、全螺旋曲げ（3周期）を調べること、基板厚さをより幅広く変えること、同じメーカーのより多くの試料を調べることを行う実験を想定することをしている。",
+      "evaluation": {
+        "verdict": "correct",
+        "score": 100,
+        "feedback": "原文の主要な意味単位は訳文に保持されています。",
+        "reference_translation": "我々は、完全な螺旋曲げ（3周期）や、より広範な基質厚さの変化、さらに同一製造元からの追加サンプルを調査する実験を計画している。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [],
+        "key_points": [
+          {
+            "source": "We envisage a subsequent experiment",
+            "translation": "我々は、実験を計画している",
+            "status": "correct"
+          },
+          {
+            "source": "investigating full helical bends (three periods)",
+            "translation": "完全な螺旋曲げ（3周期）を調査する",
+            "status": "correct"
+          },
+          {
+            "source": "as well as a larger variation of substrate thicknesses",
+            "translation": "より広範な基質厚さの変化を調査する",
+            "status": "correct"
+          },
+          {
+            "source": "and more samples from the same manufacturer",
+            "translation": "同一製造元からの追加サンプルを調査する",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "We envisage a subsequent experiment",
+            "translation": "我々は、実験を計画している",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 18,
+            "max_points": 18
+          },
+          {
+            "id": "u2",
+            "source": "investigating full helical bends (three periods)",
+            "translation": "完全な螺旋曲げ（3周期）を調査する",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "全螺旋曲げ（3周期）を調べること",
+            "earned_points": 18,
+            "max_points": 18
+          },
+          {
+            "id": "u3",
+            "source": "as well as a larger variation of substrate thicknesses",
+            "translation": "より広範な基質厚さの変化を調査する",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "基板厚さをより幅広く変えること",
+            "earned_points": 17,
+            "max_points": 17
+          },
+          {
+            "id": "u4",
+            "source": "and more samples from the same manufacturer",
+            "translation": "同一製造元からの追加サンプルを調査する",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "同じメーカーのより多くの試料を調べること",
+            "earned_points": 17,
+            "max_points": 17
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 70,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 100,
+          "total": 100,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な日本語表現。"
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      }
+    }
+  ]
+}

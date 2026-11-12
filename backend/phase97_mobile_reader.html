@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; img-src data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>PeperTranslator オフライン閲覧</title>
+<style>
+:root{color-scheme:dark;background:#0b1120;color:#e7edf8;font:16px/1.55 system-ui,-apple-system,'Noto Sans JP',sans-serif}
+*{box-sizing:border-box}body{margin:0 auto;max-width:930px;padding:20px 16px 96px}
+h1{font-size:1.45rem;margin:0 0 3px}h2{font-size:1.1rem;margin:18px 0 12px}
+small,.sub{color:#aebbd3}nav{display:flex;gap:9px;margin:22px 0;flex-wrap:wrap}
+button,a.download{border:1px solid #3b4a66;background:#18253b;border-radius:12px;padding:11px 14px;color:#e5ebff;font:inherit;cursor:pointer}
+button[aria-selected=true],button.primary{background:#4c4bbd;border-color:#7978fa;color:#fff}
+button:disabled{opacity:.48;cursor:not-allowed}a{color:#b5b2ff}a.download{text-decoration:none;display:inline-block;margin:4px 7px 5px 0}
+article,.card{border:1px solid #34415a;background:#111c30;border-radius:17px;margin:12px 0;padding:17px}
+article h3{font-size:1rem;line-height:1.55;overflow-wrap:anywhere;margin:0 0 8px}
+.notice{padding:10px 12px;margin:8px 0;border-left:3px solid #d5a54e;background:#332a20;color:#ffe0a6;border-radius:3px}
+#word{font-weight:700;line-height:1.55;font-size:clamp(1.5rem,5vw,2.25rem);overflow-wrap:anywhere;margin:35px 0;text-align:center}
+#answer{min-height:70px;font-size:1.18rem;text-align:center;overflow-wrap:anywhere}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}input{width:100%;border:1px solid #33415d;background:#101b2d;color:#fff;border-radius:12px;padding:12px;font:inherit}
+.off{display:none!important}.foot{font-size:.8rem;color:#9faecc;margin:28px 0}
+progress{width:100%;height:10px;accent-color:#8b85f5}
+@media(min-width:700px){body{padding-top:36px}}
+</style></head><body>
+<header><h1>PeperTranslator オフライン閲覧</h1><div class="sub">PC・Ollama・インターネット接続は不要です。保存したZIPを展開して利用します。</div></header>
+<nav aria-label="機能"><button id="papersTab" aria-selected="true" type="button">論文を読む</button><button id="wordsTab" aria-selected="false" type="button">語彙カード</button></nav>
+<section id="papersPanel"><h2>保存した論文</h2><div id="papers"></div></section>
+<section id="wordsPanel" class="off"><h2>語彙カード</h2>
+<div class="toolbar"><button id="toJa" aria-selected="true" type="button">英 → 日</button><button id="toEn" aria-selected="false" type="button">日 → 英</button><button id="shuffle" type="button">順序をシャッフル</button></div>
+<div class="card"><div id="counter" class="sub" aria-live="polite"></div><progress id="progress" value="0" max="1"></progress>
+<div id="word"></div><p id="answer"></p><p class="sub" id="example"></p>
+<div class="toolbar"><button class="primary" id="reveal" type="button">答えを見る</button><button id="remember" type="button" disabled>覚えた</button><button id="again" type="button" disabled>もう一度</button><button id="next" type="button">次へ</button></div></div>
+<button id="saveProgress" type="button">この端末の復習履歴をJSONで保存</button>
+<p class="sub">復習記録はこのブラウザー内のみです。PCの語彙履歴には自動同期されません。</p></section>
+<p class="foot">論文PDFは端末のPDFビューアーで表示します。日本語訳の品質警告がある場合、原文と必ず照合してください。</p>
+<script type="application/json" id="pt-data">/*__PT_OFFLINE_JSON__*/</script>
+<script>
+(()=>{'use strict';
+const data=JSON.parse(document.getElementById('pt-data').textContent);
+const $=id=>document.getElementById(id);
+const docs=Array.isArray(data.documents)?data.documents:[];
+const cards=Array.isArray(data.cards)?data.cards:[];
+function text(tag,content,cls){const el=document.createElement(tag);el.textContent=content;if(cls)el.className=cls;return el}
+function tab(id){$('papersPanel').classList.toggle('off',id!=='papers');$('wordsPanel').classList.toggle('off',id!=='words');$('papersTab').setAttribute('aria-selected',String(id==='papers'));$('wordsTab').setAttribute('aria-selected',String(id==='words'))}
+$('papersTab').addEventListener('click',()=>tab('papers'));$('wordsTab').addEventListener('click',()=>tab('words'));
+if(!docs.length)$('papers').append(text('p','論文データがありません。'));
+for(const doc of docs){const item=document.createElement('article');item.append(text('h3',doc.title||doc.id));if(doc.doi)item.append(text('small','DOI: '+doc.doi));
+if(doc.quality_gate==='fail'){item.append(text('p','QA不合格の日本語PDFは確認用です。科学値・式は英語原文と照合してください。','notice'))}
+else if(doc.quality_gate!=='pass'){item.append(text('p','日本語訳の品質は未確認です。','notice'))}
+const links=document.createElement('div');for(const f of doc.files||[]){const a=text('a',f.label,'download');a.href=f.path;a.target='_blank';a.rel='noopener';links.append(a)}item.append(links);$('papers').append(item)}
+let order=cards.map((_,i)=>i),index=0,shown=false,reverse=false;
+const storageKey='PeperTranslatorOfflineReview.v1';let history={};try{const old=JSON.parse(localStorage.getItem(storageKey)||'{}');if(old&&typeof old==='object'&&!Array.isArray(old))history=old}catch{}
+function persist(){try{localStorage.setItem(storageKey,JSON.stringify(history))}catch{}}
+function draw(){const n=order[index];const card=cards[n];$('counter').textContent=cards.length?`${index+1} / ${cards.length} 枚`:'語彙カードはありません';$('progress').value=cards.length?index+1:0;$('progress').max=Math.max(1,cards.length);
+$('word').textContent=card?(reverse?card.translation:card.source):'カードなし';$('answer').textContent=card&&shown?(reverse?card.source:card.translation):'答えを表示すると採点できます';$('example').textContent=card&&shown&&card.example?'例: '+card.example:'';
+$('remember').disabled=!card||!shown;$('again').disabled=!card||!shown;$('reveal').disabled=!card||shown;$('next').disabled=!card}
+function move(){if(!cards.length)return;index=(index+1)%cards.length;shown=false;draw()}
+$('reveal').addEventListener('click',()=>{shown=true;draw()});$('next').addEventListener('click',move);
+function mark(ok){const card=cards[order[index]];if(!card||!shown)return;const key=card.id+':'+(reverse?'ja-en':'en-ja');const entry=history[key]&&typeof history[key]==='object'?history[key]:{known:0,again:0};entry[ok?'known':'again']=(Number(entry[ok?'known':'again'])||0)+1;history[key]=entry;persist();move()}
+$('remember').addEventListener('click',()=>mark(true));$('again').addEventListener('click',()=>mark(false));
+function setReverse(value){reverse=value;shown=false;$('toJa').setAttribute('aria-selected',String(!reverse));$('toEn').setAttribute('aria-selected',String(reverse));draw()}
+$('toJa').addEventListener('click',()=>setReverse(false));$('toEn').addEventListener('click',()=>setReverse(true));
+$('shuffle').addEventListener('click',()=>{for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}index=0;shown=false;draw()});
+$('saveProgress').addEventListener('click',()=>{const payload=JSON.stringify({schema:'pepertranslator-offline-review-v1',history},null,2);const blob=new Blob([payload],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='PeperTranslator_offline_review.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)});
+draw();
+})();
+</script></body></html>

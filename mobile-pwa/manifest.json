@@ -1,0 +1,16 @@
+{
+  "id": "./",
+  "name": "PeperReader - PeperTranslator オフライン論文",
+  "short_name": "PeperReader",
+  "description": "端末内に論文PDFと単語カードを保存してオフラインで読書・復習",
+  "lang": "ja",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f7fa",
+  "theme_color": "#17152e",
+  "icons": [
+    {"src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable"},
+    {"src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}

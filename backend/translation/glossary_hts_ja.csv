@@ -1,0 +1,65 @@
+source,target,tgt_lng
+superconducting undulator,超伝導アンジュレータ,ja
+high-temperature superconducting undulator,高温超伝導アンジュレータ,ja
+HTS undulator,HTSアンジュレータ,ja
+bulk HTS,バルクHTS,ja
+bulk superconductor,バルク超伝導体,ja
+bulk high-temperature superconductor,バルク高温超伝導体,ja
+staggered-array,千鳥配列,ja
+staggered-array bulk,千鳥配列バルク,ja
+critical state,臨界状態,ja
+critical current,臨界電流,ja
+critical current density,臨界電流密度,ja
+current density,電流密度,ja
+magnetization current,磁化電流,ja
+magnetization current density,磁化電流密度,ja
+screening current,遮蔽電流,ja
+screening current induced field,遮蔽電流誘起磁場,ja
+field-cooled,磁場中冷却（FC）,ja
+field cooling,磁場中冷却（FC）,ja
+field-cooled magnetization,磁場中冷却（FC）磁化,ja
+E-J power law,E-Jべき乗則,ja
+H-formulation,H定式化,ja
+H-phi formulation,H-φ定式化,ja
+A-V formulation,A-V定式化,ja
+magnetic scalar potential,磁気スカラーポテンシャル,ja
+magnetic insulation,磁気絶縁,ja
+perfect magnetic conductor,完全磁気導体,ja
+finite element method,有限要素法（FEM）,ja
+trapped field,捕捉磁場,ja
+trapped magnetic field,捕捉磁場,ja
+flux creep,磁束クリープ,ja
+flux avalanche,磁束なだれ,ja
+flux pinning force,磁束ピンニング力,ja
+full penetration field,完全侵入磁場,ja
+backward computation,逆計算,ja
+backward computation method,逆計算法,ja
+eddy current,渦電流,ja
+Lorentz force,ローレンツ力,ja
+degrees of freedom,自由度（DOF）,ja
+degree of freedom,自由度（DOF）,ja
+sand-pile model,砂山モデル,ja
+minimum electromagnetic entropy production,最小電磁エントロピー生成,ja
+resistivity adaptive algorithm,抵抗率適応アルゴリズム（RAA）,ja
+field screening method,磁場遮蔽法,ja
+field-screened phenomenon,磁場遮蔽現象,ja
+bulk high-temperature superconductor undulator,バルク高温超伝導アンジュレータ（BHTSU）,ja
+bulk,バルク,ja
+HTS bulk,HTSバルク,ja
+superconducting bulk,バルク超伝導体,ja
+cuboid bulk,直方体バルク,ja
+bulk size,バルク寸法,ja
+end bulk,端部バルク,ja
+main bulk,主バルク,ja
+solenoid,ソレノイド,ja
+resistivity,抵抗率,ja
+constitutive law,構成則,ja
+magnetic vector potential,磁気ベクトルポテンシャル,ja
+vector potential,ベクトルポテンシャル,ja
+air subdomain,空気サブドメイン,ja
+subdomain,サブドメイン,ja
+flux parallel boundary,磁束平行境界,ja
+penetration front,侵入前線,ja
+penetration layer,侵入層,ja
+current loop,電流ループ,ja
+imaginary solution,仮想的な解,ja

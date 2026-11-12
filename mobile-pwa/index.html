@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17152e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PeperReader">
+  <meta name="description" content="通信なしで論文を読み、語彙カードを復習するPeperTranslatorのスマホ版。">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; frame-src blob:; connect-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="icon" type="image/png" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./app.css">
+  <script defer src="./vendor/jszip.min.js"></script>
+  <script type="module" src="./app.js"></script>
+  <title>PeperReader | オフライン論文・語彙</title>
+</head>
+<body>
+  <header class="masthead">
+    <div class="brand"><div class="brandmark" aria-hidden="true">P</div><div><div class="brandname">PeperReader</div><div class="tagline">PeperTranslator / Offline</div></div></div>
+    <div id="onlineChip" class="connection" aria-live="polite">準備中</div>
+  </header>
+  <main id="mainContent" class="content">
+    <section class="hero">
+      <div class="eyebrow">PERSONAL PAPER LIBRARY</div>
+      <h1>論文を持ち歩く。<br>学びを止めない。</h1>
+      <p>論文PDFと単語カードを端末内に保存。準備後はネット接続なしで閲覧・復習できます。</p>
+      <div class="hero-actions">
+        <label for="zipInput" class="btn primary">＋ 論文ZIPを取り込む</label>
+        <button id="installBtn" class="btn secondary" hidden>ホーム画面に追加</button>
+        <input id="zipInput" class="visually-hidden" type="file" accept=".zip,application/zip">
+      </div>
+      <div id="swInfo" class="quiet" role="status">オフライン起動を確認しています…</div>
+    </section>
+    <nav class="tabs" aria-label="メイン表示">
+      <button id="papersTab" class="tab active" aria-selected="true" data-tab="papers">論文 <span id="docBadge">0</span></button>
+      <button id="cardsTab" class="tab" aria-selected="false" data-tab="cards">語彙復習 <span id="dueBadge">0</span></button>
+      <button id="settingsTab" class="tab" aria-selected="false" data-tab="settings">設定・バックアップ</button>
+    </nav>
+    <section id="papersPanel" class="panel" aria-labelledby="papersTab">
+      <div class="sectionhead"><h2>マイライブラリ</h2><span id="paperCount" class="meta"></span></div>
+      <div id="paperList" class="paper-list" aria-live="polite"><p class="empty">まだ論文がありません。Windows版で持ち出したZIPを取り込んでください。</p></div>
+    </section>
+    <section id="cardsPanel" class="panel hidden" aria-labelledby="cardsTab">
+      <div class="sectionhead"><h2>単語カード</h2><span id="cardCount" class="meta"></span></div>
+      <div class="studytools"><div class="segmented" role="group" aria-label="出題方向"><button id="enJa" class="selected">英 → 日</button><button id="jaEn">日 → 英</button></div><button id="shuffleBtn" class="btn tiny">順序をシャッフル</button></div>
+      <div id="studyEmpty" class="empty">語彙カードがありません。持ち出しZIPを取り込むと復習できます。</div>
+      <article id="studyCard" class="study-card hidden" aria-live="polite"><div class="counter" id="studyCounter"></div><div class="question" id="studyQuestion"></div><div class="answer hidden" id="studyAnswer"></div><div class="studybuttons"><button id="revealBtn" class="btn primary full">答えを表示</button><button id="againBtn" class="btn warning hidden">もう一度</button><button id="knownBtn" class="btn positive hidden">覚えた</button><button id="skipBtn" class="btn tiny">次のカード</button></div></article>
+      <p class="quiet">復習履歴はこの端末だけに保存されます。次回の復習予定は英日・日英で独立しています。</p>
+    </section>
+    <section id="settingsPanel" class="panel hidden" aria-labelledby="settingsTab">
+      <div class="sectionhead"><h2>端末内のデータ</h2></div>
+      <article class="settings-card"><div id="storageStats" class="statline">容量を計算しています…</div><button id="persistentBtn" class="btn secondary full">端末ストレージの保持を申請</button><p class="quiet">保存データはブラウザーの消去・端末の容量不足で失われる可能性があります。定期的にバックアップしてください。</p></article>
+      <article class="settings-card"><h3>バックアップ・復元</h3><p>論文PDF・語彙・復習履歴をまとめてZIPで保存できます。バックアップは端末から安全な場所へ移してください。</p><button id="backupBtn" class="btn primary full">全データをZIPへバックアップ</button><label for="restoreInput" class="btn secondary full">バックアップZIPを復元</label><input id="restoreInput" type="file" accept=".zip,application/zip" class="visually-hidden"></article>
+      <article class="settings-card"><h3>インストール</h3><p>ホーム画面への追加は、HTTPSで公開されたPWAをSafariまたはChromeで開いたときに利用できます。端末に取り込んだPDFはWebサーバーへ送信しません。</p><p id="installationHelp" class="quiet"></p></article>
+      <article class="settings-card danger-zone"><h3>全データ削除</h3><p>この端末に保存した論文・語彙・復習履歴を削除します。取り消せません。</p><button id="clearBtn" class="btn danger">端末内データを削除</button></article>
+    </section>
+  </main>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="viewerDialog" class="viewer-dialog"><div class="viewer-header"><div id="viewerTitle" class="viewer-title"></div><div class="viewer-actions"><button id="viewerDownload" class="btn tiny">PDF保存</button><button id="viewerOpen" class="btn tiny">別タブ</button><button id="viewerClose" class="btn tiny">閉じる</button></div></div><p id="viewerWarning" class="viewer-warning" hidden>QA不合格・未確認の日本語版です。重要な式・数値は英語原文と照合してください。</p><iframe id="pdfFrame" title="オフラインPDF"></iframe><p class="viewer-fallback">PDFが表示されない場合は「PDF保存」で端末に保存し、PDFビューアーで開いてください。</p></dialog>
+  <footer class="footnote">端末内保存・通信不要。翻訳や同期はWindows版で実行します。</footer>
+</body>
+</html>

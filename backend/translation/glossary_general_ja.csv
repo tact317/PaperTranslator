@@ -1,0 +1,27 @@
+source,target,tgt_lng
+undulator,アンジュレータ,ja
+undulator field,アンジュレータ磁場,ja
+period length,周期長,ja
+magnetic gap,磁気ギャップ,ja
+magnetic field,磁場,ja
+applied field,印加磁場,ja
+magnetizing field,磁化磁場,ja
+on-axis magnetic field,軸上磁場,ja
+field quality,磁場品質,ja
+field integral,磁場積分,ja
+first field integral,第1磁場積分,ja
+second field integral,第2磁場積分,ja
+beamline,ビームライン,ja
+brilliance,輝度,ja
+hard x-ray,硬X線,ja
+synchrotron radiation,放射光,ja
+synchrotron,シンクロトロン,ja
+free electron laser,自由電子レーザー（FEL）,ja
+spontaneous emission,自然放出,ja
+Paul Scherrer Institute,パウル・シェラー研究所（PSI）,ja
+Swiss Light Source,スイス光源（SLS）,ja
+superconducting solenoid,超伝導ソレノイド,ja
+insertion device,挿入光源,ja
+dipole magnet,ダイポール磁石,ja
+advanced light source,先進光源,ja
+high-brilliance photon beam,高輝度光子ビーム,ja

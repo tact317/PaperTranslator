@@ -1,0 +1,840 @@
+{
+  "origin": "2026-10-09 blind4 first-use Windows; exposed POST-HOC regression, NOT blind",
+  "cases": [
+    {
+      "id": "blind4_otten2016_natural_03",
+      "source_text": "The minimum bending radius is defined as the lowest radius for which the irreversible degradation is less than 5%.",
+      "user_answer": "最小曲げ半径は、不可逆的な劣化が5%未満となる範囲で最も小さい曲げ半径と定義する。",
+      "expect": {
+        "min_score": 95,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      },
+      "original_score": 87,
+      "original_japanese": 15,
+      "evaluation": {
+        "verdict": "correct",
+        "score": 87,
+        "feedback": "「the lowest radius for which」の意味関係が原文と異なります。基準: ～となる最小の半径",
+        "reference_translation": "最小曲げ半径は、不可逆的な劣化が5%未満となる最小の半径として定義される。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "mistranslation",
+            "source_span": "the lowest radius for which",
+            "message": "範囲の概念が誤解されている",
+            "suggestion": "～となる最小の半径"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "The minimum bending radius",
+            "translation": "最小曲げ半径",
+            "status": "correct"
+          },
+          {
+            "source": "is defined as",
+            "translation": "として定義される",
+            "status": "correct"
+          },
+          {
+            "source": "the lowest radius for which",
+            "translation": "～となる最小の半径",
+            "status": "missing"
+          },
+          {
+            "source": "the irreversible degradation is less than 5%",
+            "translation": "不可逆的な劣化が5%未満",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "The minimum bending radius",
+            "translation": "最小曲げ半径",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "最小曲げ半径",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u2",
+            "source": "is defined as",
+            "translation": "として定義される",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 19,
+            "max_points": 19
+          },
+          {
+            "id": "u3",
+            "source": "the lowest radius for which",
+            "translation": "～となる最小の半径",
+            "importance": "support",
+            "status": "wrong",
+            "note": "範囲の概念が誤解されている",
+            "evidence_span": "",
+            "earned_points": 0,
+            "max_points": 13
+          },
+          {
+            "id": "u4",
+            "source": "the irreversible degradation is less than 5%",
+            "translation": "不可逆的な劣化が5%未満",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "不可逆的な劣化が5%未満",
+            "earned_points": 19,
+            "max_points": 19
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 57,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 87,
+          "total": 87,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な表現だが、u3の誤りがある"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "最小曲げ半径は、不可逆的な劣化が5%未満の最小半径として定義されます。",
+          "message": "外部MT監査訳と参考訳は実質的に同義である。",
+          "month_usage": 19436,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "actual_failures": [
+        "score 87 not in [95, 100]",
+        "unexpected material issue: ['mistranslation']"
+      ]
+    },
+    {
+      "id": "blind4_otten2016_natural_04",
+      "source_text": "Impregnation prevents the strands from sliding relative to each other and makes the cable inflexible.",
+      "user_answer": "含浸は素線同士の相対的なすべりを妨げ、ケーブルの柔軟性を失わせる。",
+      "expect": {
+        "min_score": 95,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      },
+      "original_score": 82,
+      "original_japanese": 15,
+      "evaluation": {
+        "verdict": "partial",
+        "score": 82,
+        "feedback": "「inflexible」の意味関係が原文と異なります。基準: 柔軟性のないものにします",
+        "reference_translation": "含浸は糸同士の相対的な滑りを防ぎ、ケーブルを柔軟性のないものにします。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "mistranslation",
+            "source_span": "inflexible",
+            "message": "「失う」ではなく「防ぐ」や「ないものにする」という意味で翻訳する",
+            "suggestion": "柔軟性のないものにします"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "Impregnation prevents the strands",
+            "translation": "含浸は糸同士の相対的な滑りを防ぎ",
+            "status": "correct"
+          },
+          {
+            "source": "and makes the cable",
+            "translation": "、ケーブルを",
+            "status": "correct"
+          },
+          {
+            "source": "inflexible",
+            "translation": "柔軟性のないものにします",
+            "status": "missing"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "Impregnation prevents the strands",
+            "translation": "含浸は糸同士の相対的な滑りを防ぎ",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "含浸は素線同士の相対的なすべりを妨げ",
+            "earned_points": 26,
+            "max_points": 26
+          },
+          {
+            "id": "u2",
+            "source": "and makes the cable",
+            "translation": "、ケーブルを",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "、ケーブルの",
+            "earned_points": 26,
+            "max_points": 26
+          },
+          {
+            "id": "u3",
+            "source": "inflexible",
+            "translation": "柔軟性のないものにします",
+            "importance": "support",
+            "status": "wrong",
+            "note": "「柔軟性のないものにします」の意味が異なる",
+            "evidence_span": "柔軟性を失わせる",
+            "earned_points": 0,
+            "max_points": 18
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 52,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 82,
+          "total": 82,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": ""
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "含浸は糸同士の相対的な滑りを防ぎ、ケーブルの柔軟性を失わせます。",
+          "message": "外部MT監査訳と参考訳は実質同義です。",
+          "month_usage": 19570,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "actual_failures": [
+        "score 82 not in [95, 100]",
+        "unexpected material issue: ['mistranslation']"
+      ]
+    },
+    {
+      "id": "blind4_otten2016_awkward_10",
+      "source_text": "The bending strain is negative when the REBCO layer is on the inside of the bend, since it is compressed.",
+      "user_answer": "REBCO層が曲げの内側にある場合、圧縮されるため、曲げひずみが負になることが起こるということになる。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "original_score": 98,
+      "original_japanese": 15,
+      "evaluation": {
+        "verdict": "correct",
+        "score": 98,
+        "feedback": "「since it is compressed」の意味は一部保持されていますが、関係を明確にしてください。基準: なぜなら、REBCO層が圧縮されているからです",
+        "reference_translation": "REBCO層が曲げの内側にある場合、曲げひずみは負になります。なぜなら、REBCO層が圧縮されているからです。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "since it is compressed",
+            "message": "限定が弱い",
+            "suggestion": "より明確な表現に"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "The bending strain is negative",
+            "translation": "曲げひずみは負になります",
+            "status": "correct"
+          },
+          {
+            "source": "when the REBCO layer is on the inside of the bend",
+            "translation": "REBCO層が曲げの内側にある場合",
+            "status": "correct"
+          },
+          {
+            "source": "since it is compressed",
+            "translation": "なぜなら、REBCO層が圧縮されているからです",
+            "status": "warning"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "The bending strain is negative",
+            "translation": "曲げひずみは負になります",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 30,
+            "max_points": 30
+          },
+          {
+            "id": "u2",
+            "source": "when the REBCO layer is on the inside of the bend",
+            "translation": "REBCO層が曲げの内側にある場合",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 20,
+            "max_points": 20
+          },
+          {
+            "id": "u3",
+            "source": "since it is compressed",
+            "translation": "なぜなら、REBCO層が圧縮されているからです",
+            "importance": "support",
+            "status": "partial",
+            "note": "限定が弱い",
+            "evidence_span": "圧縮されるため",
+            "earned_points": 18,
+            "max_points": 20
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 68,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 98,
+          "total": 98,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": ""
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "REBCO層が曲げの内側にある場合、曲げひずみは負になります。なぜなら、REBCO層が圧縮されているからです。",
+          "message": "外部MT監査訳と参考訳は実質同義です。",
+          "month_usage": 20628,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "actual_failures": [
+        "Japanese score 15 > 12"
+      ]
+    },
+    {
+      "id": "blind4_otten2016_awkward_11",
+      "source_text": "Both cables had a transposition length [3] of 226 mm and consisted of 15 strands.",
+      "user_answer": "両ケーブルは転位長が226 mmであるということになっており、15本の素線から構成されているということになっている。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "original_score": 52,
+      "original_japanese": 13,
+      "evaluation": {
+        "verdict": "incorrect",
+        "score": 52,
+        "feedback": "「had a transposition length of 226 mm」の意味関係が原文と異なります。基準: 転換長[3]は226mm",
+        "reference_translation": "両ケーブルの転換長[3]は226mmで、15本のストランドで構成されていた。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "mistranslation",
+            "source_span": "transposition length",
+            "message": "転位長と誤訳",
+            "suggestion": "転換長"
+          },
+          {
+            "category": "mistranslation",
+            "source_span": "strands",
+            "message": "素線と誤訳",
+            "suggestion": "ストランド"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "Both cables",
+            "translation": "両ケーブル",
+            "status": "correct"
+          },
+          {
+            "source": "had a transposition length of 226 mm",
+            "translation": "転換長[3]は226mm",
+            "status": "missing"
+          },
+          {
+            "source": "consisted of 15 strands",
+            "translation": "15本のストランドで構成されていた",
+            "status": "missing"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "Both cables",
+            "translation": "両ケーブル",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "両ケーブル",
+            "earned_points": 24,
+            "max_points": 24
+          },
+          {
+            "id": "u2",
+            "source": "had a transposition length of 226 mm",
+            "translation": "転換長[3]は226mm",
+            "importance": "core",
+            "status": "wrong",
+            "note": "転換長と誤訳",
+            "evidence_span": "転位長が226 mmであるということになっており",
+            "earned_points": 0,
+            "max_points": 23
+          },
+          {
+            "id": "u3",
+            "source": "consisted of 15 strands",
+            "translation": "15本のストランドで構成されていた",
+            "importance": "core",
+            "status": "wrong",
+            "note": "ストランドと誤訳",
+            "evidence_span": "15本の素線から構成されているということになっている",
+            "earned_points": 0,
+            "max_points": 23
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 24,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 52,
+          "total": 52,
+          "cap_reason": "主要意味単位の重大誤訳、または確認済みの構文上の誤りがあるため、総合点は59点以下です。"
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "表現が自然でない 日本語品質コメントが自然さの改善余地を明示しています。 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "両ケーブルの転換長[3]は226mmで、15本のストランドで構成されていました。",
+          "message": "外部MT監査訳と参考訳は実質同義である。",
+          "month_usage": 20767,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "actual_failures": [
+        "score 52 not in [55, 100]",
+        "unexpected material issue: ['mistranslation']",
+        "Japanese score 13 > 12"
+      ]
+    },
+    {
+      "id": "blind4_otten2016_awkward_12",
+      "source_text": "The effect however needs to be taken into account if the magnet is pre-tested at T = 77 K.",
+      "user_answer": "ただし、磁石をT = 77 Kで事前試験する場合、この影響を考慮することが必要となることが求められる。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "original_score": 98,
+      "original_japanese": 13,
+      "evaluation": {
+        "verdict": "correct",
+        "score": 98,
+        "feedback": "原文の主要な意味は保持されています。日本語品質: 冗長表現と自然さ欠如 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。",
+        "reference_translation": "ただし、磁石がT = 77 Kで事前試験されている場合、この効果を考慮する必要があります。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "if the magnet is pre-tested at T = 77 K",
+            "message": "冗長表現",
+            "suggestion": "簡潔に表現"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "The effect",
+            "translation": "この効果",
+            "status": "correct"
+          },
+          {
+            "source": "however needs to be taken into account",
+            "translation": "考慮する必要があります",
+            "status": "correct"
+          },
+          {
+            "source": "if the magnet is pre-tested",
+            "translation": "磁石が事前試験されている場合",
+            "status": "warning"
+          },
+          {
+            "source": "at T = 77 K",
+            "translation": "T = 77 Kで",
+            "status": "warning"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "The effect",
+            "translation": "この効果",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "この影響",
+            "earned_points": 23,
+            "max_points": 23
+          },
+          {
+            "id": "u2",
+            "source": "however needs to be taken into account",
+            "translation": "考慮する必要があります",
+            "importance": "core",
+            "status": "correct",
+            "note": "独立逆翻訳監査で原文の主要概念と関係が十分保持されているため、表現差による減点を解除しました。",
+            "evidence_span": "考慮することが必要となることが求められる",
+            "earned_points": 23,
+            "max_points": 23
+          },
+          {
+            "id": "u3",
+            "source": "if the magnet is pre-tested",
+            "translation": "磁石が事前試験されている場合",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "磁石をT = 77 Kで事前試験する場合",
+            "earned_points": 16,
+            "max_points": 16
+          },
+          {
+            "id": "u4",
+            "source": "at T = 77 K",
+            "translation": "T = 77 Kで",
+            "importance": "detail",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "T = 77 Kで",
+            "earned_points": 8,
+            "max_points": 8
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 70,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 98,
+          "total": 98,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "冗長表現と自然さ欠如 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "ただし、磁石がT = 77 Kで事前試験されている場合は、この効果を考慮する必要があります。",
+          "message": "外部MT監査訳と参考訳が一致",
+          "month_usage": 20908,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "actual_failures": [
+        "Japanese score 13 > 12"
+      ]
+    },
+    {
+      "id": "blind4_otten2016_omission_13",
+      "source_text": "All tested conductors are found to tolerate compressive bending to a radius of 6 mm with less than 5% irreversible degradation of the critical current.",
+      "user_answer": "試験したすべての導体は、臨界電流にほとんど不可逆的な劣化を生じずに圧縮曲げに耐えた。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 89,
+        "must_have_noncorrect": true,
+        "must_have_missing": true
+      },
+      "original_score": 97,
+      "original_japanese": 15,
+      "evaluation": {
+        "verdict": "correct",
+        "score": 97,
+        "feedback": "「are found to tolerate」の意味は一部保持されていますが、関係を明確にしてください。基準: が耐えられることが確認された",
+        "reference_translation": "すべての試験された導体は、6mmの半径での圧縮曲げに耐え、臨界電流の不可逆的な劣化が5%未満であることが確認された。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "wording",
+            "source_span": "are found to tolerate",
+            "message": "確認されたという表現が弱い",
+            "suggestion": "確認されたと明確に表現する"
+          },
+          {
+            "category": "wording",
+            "source_span": "with less than 5% irreversible degradation",
+            "message": "5%未満という限定が弱い",
+            "suggestion": "5%未満と明確に表現する"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "All tested conductors",
+            "translation": "すべての試験された導体",
+            "status": "correct"
+          },
+          {
+            "source": "are found to tolerate",
+            "translation": "が耐えられることが確認された",
+            "status": "warning"
+          },
+          {
+            "source": "compressive bending to a radius of 6 mm",
+            "translation": "6mmの半径での圧縮曲げ",
+            "status": "correct"
+          },
+          {
+            "source": "with less than 5% irreversible degradation",
+            "translation": "5%未満の不可逆的な劣化",
+            "status": "warning"
+          },
+          {
+            "source": "of the critical current",
+            "translation": "臨界電流の",
+            "status": "correct"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "All tested conductors",
+            "translation": "すべての試験された導体",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "試験したすべての導体",
+            "earned_points": 17,
+            "max_points": 17
+          },
+          {
+            "id": "u2",
+            "source": "are found to tolerate",
+            "translation": "が耐えられることが確認された",
+            "importance": "core",
+            "status": "partial",
+            "note": "中心的な意味は保持しているが、確認されたという表現が弱い",
+            "evidence_span": "圧縮曲げに耐えた",
+            "earned_points": 15,
+            "max_points": 17
+          },
+          {
+            "id": "u3",
+            "source": "compressive bending to a radius of 6 mm",
+            "translation": "6mmの半径での圧縮曲げ",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 12,
+            "max_points": 12
+          },
+          {
+            "id": "u4",
+            "source": "with less than 5% irreversible degradation",
+            "translation": "5%未満の不可逆的な劣化",
+            "importance": "support",
+            "status": "partial",
+            "note": "5%未満という限定が弱い",
+            "evidence_span": "ほとんど不可逆的な劣化",
+            "earned_points": 11,
+            "max_points": 12
+          },
+          {
+            "id": "u5",
+            "source": "of the critical current",
+            "translation": "臨界電流の",
+            "importance": "support",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 12,
+            "max_points": 12
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 67,
+          "terminology": 15,
+          "japanese": 15,
+          "raw_total": 97,
+          "total": 97,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "natural",
+          "note": "自然な日本語表現"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "試験されたすべての導体は、半径6mmまでの圧縮曲げに耐え、臨界電流の不可逆的な劣化が5%未満であることが示されています。",
+          "message": "外部MT監査訳と参考訳は意味が整合している。",
+          "month_usage": 21101,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "actual_failures": [
+        "score 97 not in [0, 89]",
+        "expected missing semantic unit was not detected"
+      ]
+    },
+    {
+      "id": "blind4_otten2016_reversal_24",
+      "source_text": "Impregnation should therefore be done after the cable is bent into the coil shape.",
+      "user_answer": "したがって、含浸はケーブルをコイル形状に曲げる前に実施すべきである。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 59,
+        "must_have_material_issue": true,
+        "must_have_noncorrect": true
+      },
+      "original_score": 70,
+      "original_japanese": 13,
+      "evaluation": {
+        "verdict": "partial",
+        "score": 70,
+        "feedback": "「after the cable is bent into the coil shape」の意味関係が原文と異なります。基準: ケーブルをコイル形状に曲げた後",
+        "reference_translation": "したがって、ケーブルをコイル形状に曲げた後、浸透を行うべきです。",
+        "meaning_errors": [],
+        "missing_information": [],
+        "issues": [
+          {
+            "category": "mistranslation",
+            "source_span": "after the cable is bent into the coil shape",
+            "message": "時系列が逆転している",
+            "suggestion": "曲げた後"
+          }
+        ],
+        "key_points": [
+          {
+            "source": "Impregnation should therefore be done",
+            "translation": "したがって、浸透を行うべきです",
+            "status": "correct"
+          },
+          {
+            "source": "after the cable is bent into the coil shape",
+            "translation": "ケーブルをコイル形状に曲げた後",
+            "status": "missing"
+          }
+        ],
+        "semantic_units": [
+          {
+            "id": "u1",
+            "source": "Impregnation should therefore be done",
+            "translation": "したがって、浸透を行うべきです",
+            "importance": "core",
+            "status": "correct",
+            "note": "",
+            "evidence_span": "",
+            "earned_points": 42,
+            "max_points": 42
+          },
+          {
+            "id": "u2",
+            "source": "after the cable is bent into the coil shape",
+            "translation": "ケーブルをコイル形状に曲げた後",
+            "importance": "support",
+            "status": "wrong",
+            "note": "時系列が逆転している",
+            "evidence_span": "前に実施すべきである",
+            "earned_points": 0,
+            "max_points": 28
+          }
+        ],
+        "score_breakdown": {
+          "meaning": 42,
+          "terminology": 15,
+          "japanese": 13,
+          "raw_total": 70,
+          "total": 70,
+          "cap_reason": ""
+        },
+        "japanese_quality": {
+          "level": "minor",
+          "note": "前置詞の扱いが不自然 強い日本語減点を裏づける具体的な表現指摘がないため、軽微な改善余地として扱います。"
+        },
+        "external_audit": {
+          "provider": "azure",
+          "status": "verified",
+          "translation": "したがって、浸透はケーブルをコイル形状に曲げた後に行うべきです。",
+          "message": "意味は一致しています。",
+          "month_usage": 22857,
+          "monthly_soft_limit": 1800000,
+          "cached": false
+        },
+        "syntax_focus": {
+          "needed": false,
+          "summary": "",
+          "relations": []
+        }
+      },
+      "actual_failures": [
+        "score 70 not in [0, 59]"
+      ]
+    }
+  ]
+}

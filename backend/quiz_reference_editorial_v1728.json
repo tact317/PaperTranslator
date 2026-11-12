@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-10",
+  "purpose": "DISPLAY ONLY: do not alter canonical rubric/evaluation caches or grading",
+  "entries": [
+    {
+      "id": "blind_ihep_paraphrase_01",
+      "source_text": "The main function of the correction current is to adjust the first and second integrals of the magnetic field on-axis which determine the beam trajectory along the undulator.",
+      "source_sha256": "55416ba3bdb37f792f76a82f29fc2a10dc5dd3173adb58bfc6c5a445bf63fac2",
+      "observed_reference": "補正電流の主な機能は、磁場の第1および第2の積分を調整し、その積分値がビームの軌道を決定するアンジュレータ内の軌道を決める。",
+      "reviewed_reference": "補正電流の主な役割は、軸上磁場の第1・第2積分を調整することである。これらの積分値は、アンジュレータに沿ったビーム軌道を決定する。",
+      "review_basis": "source-checked editorial QA against existing real-paper regression",
+      "review_status": "editorially_reviewed_not_user_approved"
+    },
+    {
+      "id": "blind5_casalbuoni2023_omission_14",
+      "source_text": "There are two hard X-ray lines and a soft X-ray line named SASE1, SASE2, and SASE3, respectively.",
+      "source_sha256": "69de0b1d93b2bc74fba923d239d71009054fe73d7e506523ff910f35e4d63ee0",
+      "observed_reference": "硬X線は2本と、軟X線はSASE1、SASE2、SASE3と名付けられている。",
+      "reviewed_reference": "欧州XFELには硬X線用ラインが2本、軟X線用ラインが1本あり、それぞれSASE1、SASE2、SASE3と呼ばれる。",
+      "review_basis": "source-checked editorial QA against existing real-paper regression",
+      "review_status": "editorially_reviewed_not_user_approved"
+    },
+    {
+      "id": "blind6_arsenault2023_awkward_09",
+      "source_text": "However, although the simulations were much faster, high-order shape functions were required in the H–φ formulation in order to obtain similar accuracy between the two formulations.",
+      "source_sha256": "7751f8745132a578147bd8a6fab035674085979766959e90d242c44b546dcdc2",
+      "observed_reference": "しかし、シミュレーションははるかに高速だったが、H–φ定式化では高次の形状関数が必要となり、両形式で同様の精度を得るために高次の形状関数が必要だった。",
+      "reviewed_reference": "しかし、シミュレーションは大幅に高速化したものの、両定式化で同程度の精度を得るには、H–φ定式化で高次の形状関数が必要だった。",
+      "review_basis": "source-checked editorial QA against existing real-paper regression",
+      "review_status": "editorially_reviewed_not_user_approved"
+    },
+    {
+      "id": "blind4_otten2016_reversal_24",
+      "source_text": "Impregnation should therefore be done after the cable is bent into the coil shape.",
+      "source_sha256": "63d52f821fee570a78bc4448fc55623985da07a2c5942291d1f984136c363483",
+      "observed_reference": "したがって、ケーブルをコイル形状に曲げた後、浸透を行うべきです。",
+      "reviewed_reference": "したがって、含浸はケーブルをコイル形状に曲げた後に行うべきである。",
+      "review_basis": "source-checked editorial QA against existing real-paper regression",
+      "review_status": "editorially_reviewed_not_user_approved"
+    },
+    {
+      "id": "blind5_casalbuoni2023_paraphrase_05",
+      "source_text": "An additional advantage of NbTi SCUs with respect to permanent magnet-based undulators is radiation hardness, which has been demonstrated in NbTi magnets used in different colliders such as the Tevatron [4], HERA [5], and LHC [6] for several decades.",
+      "source_sha256": "b3d9260fa0e1af748ea0246def469a0162e03de5e5c250e074afbd6095cd91e7",
+      "observed_reference": "NbTi SCUは永久磁石ベースのアンジュレーターに対して放射線耐性という追加の利点があり、これはTevatron[4]、HERA[5]、LHC[6]などの異なるコライダーで数十年にわたり確認されています。",
+      "reviewed_reference": "永久磁石方式のアンジュレータと比べ、NbTi超電導アンジュレータには耐放射線性という追加の利点がある。これはTevatron、HERA、LHCなどの衝突型加速器で数十年にわたって使用されてきたNbTi磁石によって実証されている。",
+      "review_basis": "source-checked editorial QA against existing real-paper regression",
+      "review_status": "editorially_reviewed_not_user_approved"
+    }
+  ]
+}
