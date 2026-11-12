@@ -316,3 +316,73 @@ body{
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .fade-up{animation:fadeUp .28s ease forwards}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* v1.7.30: Separate reading font sizes; labels / headers retain their sizes. */
+.pt-source-text { font-size:var(--pt-source-size,20px) !important; }
+.pt-answer-text { font-size:var(--pt-answer-size,18px) !important; }
+.pt-feedback-text { font-size:var(--pt-feedback-size,16px) !important; }
+.pt-reference-text { font-size:var(--pt-reference-size,16px) !important; }
+[data-slot="resizable-handle"] { touch-action:none; }
+[data-slot="resizable-handle"]:hover > div, [data-slot="resizable-handle"]:focus-visible > div { background:#818cf8; }
+
+/* v1.7.30: Daylight palette; keep semantic statuses and PDF raster colors unchanged. */
+.pt-theme-light { background:#f4f6fb !important; color:#19283f !important; }
+.pt-theme-light [class*="bg-zinc-950"] { background-color:#f4f6fb !important; }
+.pt-theme-light [class*="bg-zinc-900"] { background-color:#fff !important; }
+.pt-theme-light [class*="bg-emerald-950"] { background-color:#e8f8ef !important; }
+.pt-theme-light [class*="bg-amber-950"] { background-color:#fff5df !important; }
+.pt-theme-light [class*="bg-red-950"] { background-color:#fff0ef !important; }
+.pt-theme-light [class*="bg-black/"] { background-color:rgba(225,232,244,.45) !important; }
+.pt-theme-light [class*="bg-white/"] { background-color:rgba(210,221,235,.30) !important; }
+.pt-theme-light [class*="border-white/"] { border-color:rgba(112,133,162,.22) !important; }
+.pt-theme-light [class*="text-zinc-100"], .pt-theme-light [class*="text-zinc-200"] { color:#1e293b !important; }
+.pt-theme-light [class*="text-zinc-300"] { color:#334155 !important; }
+.pt-theme-light [class*="text-zinc-400"] { color:#475569 !important; }
+.pt-theme-light [class*="text-zinc-500"] { color:#526176 !important; }
+.pt-theme-light [class*="text-zinc-600"] { color:#64748b !important; }
+.pt-theme-light [class*="text-zinc-700"], .pt-theme-light [class*="text-zinc-800"] { color:#77879e !important; }
+.pt-theme-light [class*="text-indigo-300"] { color:#4338ca !important; }
+.pt-theme-light [class*="text-indigo-400"] { color:#4f46e5 !important; }
+.pt-theme-light [class*="text-emerald-300"], .pt-theme-light [class*="text-emerald-400"] { color:#047857 !important; }
+.pt-theme-light [class*="text-red-300"], .pt-theme-light [class*="text-red-400"] { color:#b91c1c !important; }
+.pt-theme-light [class*="text-amber-300"], .pt-theme-light [class*="text-amber-400"] { color:#92400e !important; }
+/* Strong colored call-to-action buttons retain white lettering. */
+.pt-theme-light button[class*="bg-indigo-600"], .pt-theme-light button[class*="bg-emerald-600"] { color:white !important; background-color:#4f46e5 !important; }
+.pt-theme-light button[class*="bg-indigo-600"] *, .pt-theme-light button[class*="bg-emerald-600"] * { color:white !important; }
+.pt-theme-light .pt-display-settings { background:#fff !important; border-color:#cfd8e5 !important; }
+.pt-theme-light .pt-library-dialog { background:#f5f7fb !important; }
+.pt-theme-light input, .pt-theme-light textarea, .pt-theme-light select { color:#19283f; }
+.pt-theme-light input::placeholder, .pt-theme-light textarea::placeholder { color:#64748b !important; }
+.pt-theme-light select option { background:#fff; color:#19283f; }
+
+.pt-theme-light [role="presentation"].fixed { background:rgba(24,36,56,.40) !important; }
+
+/* Phase98.4: Knowledge Graph is a self-contained dark workspace even when the
+   surrounding Reader is in the daylight theme. This overrides ONLY this dialog. */
+.pt-kg-shell,
+.pt-theme-light .pt-kg-shell {
+  color: #e2e8f0 !important;
+  background-color: #0d1423 !important;
+  border-color: rgba(129,140,248,.30) !important;
+}
+.pt-theme-light .pt-kg-shell [class*="bg-zinc-950"] { background-color:#101827 !important; }
+.pt-theme-light .pt-kg-shell [class*="bg-zinc-900"] { background-color:#162034 !important; }
+.pt-theme-light .pt-kg-shell [class*="text-zinc-100"] { color:#f1f5f9 !important; }
+.pt-theme-light .pt-kg-shell [class*="text-zinc-200"] { color:#e2e8f0 !important; }
+.pt-theme-light .pt-kg-shell [class*="text-zinc-300"] { color:#cbd5e1 !important; }
+.pt-theme-light .pt-kg-shell [class*="text-zinc-400"] { color:#aebbd0 !important; }
+.pt-theme-light .pt-kg-shell [class*="text-zinc-500"] { color:#93a4bd !important; }
+.pt-theme-light .pt-kg-shell [class*="border-white/"] { border-color:rgba(148,163,184,.19) !important; }
+.pt-theme-light .pt-kg-shell input,
+.pt-theme-light .pt-kg-shell select,
+.pt-theme-light .pt-kg-shell textarea {
+  color:#f1f5f9 !important;
+  background-color:#182338 !important;
+  border-color:rgba(148,163,184,.24) !important;
+}
+.pt-theme-light .pt-kg-shell input::placeholder,
+.pt-theme-light .pt-kg-shell textarea::placeholder { color:#9ba9bf !important; }
+.pt-theme-light .pt-kg-shell select option { color:#e2e8f0 !important; background:#172033 !important; }
+.pt-kg-shell input:focus-visible,.pt-kg-shell select:focus-visible,.pt-kg-shell textarea:focus-visible,
+.pt-kg-shell button:focus-visible { outline:2px solid #818cf8; outline-offset:2px; }
+.pt-kg-canvas { touch-action:none; user-select:none; }

@@ -4,6 +4,7 @@ import * as React from "react"
 import { Inter, JetBrains_Mono } from "next/font/google"
 import {
   AlertTriangle,
+  Bell,
   ArrowRight,
   BookOpen,
   CheckCircle2,
@@ -11,11 +12,9 @@ import {
   ChevronLeft,
   ChevronRight,
   FileText,
+  GitBranch,
   Files,
   FolderOpen,
-  HelpCircle,
-  Keyboard,
-  Lightbulb,
   List,
   Languages,
   Download,
@@ -27,8 +26,11 @@ import {
   Printer,
   RotateCcw,
   Search,
+  Settings2,
+  Sun,
+  Moon,
   Send,
-  Settings,
+  ShieldCheck,
   Sparkles,
   XCircle,
   Zap,
@@ -43,6 +45,12 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
+import { KnowledgeGraphPanel } from "@/components/knowledge-graph-panel"
+import {
+  JOB_MONITOR_STORAGE_KEY, createTrackedJob, isTerminalJob,
+  jobStatusLabel, jobStatusUrl, keepRecentJobs, restoreTrackedJobs, updateTrackedJob,
+  type TrackedJobKind, type TrackedTranslationJob,
+} from "@/lib/translation-job-monitor"
 
 const inter = Inter({
   subsets: ["latin", "latin-ext"],
@@ -54,11 +62,63 @@ const jetBrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 })
 
+type UiTheme = "dark" | "light"
+type DisplayPreferences = {
+  theme: UiTheme
+  sourceSize: number
+  answerSize: number
+  feedbackSize: number
+  referenceSize: number
+}
+const DISPLAY_PREFERENCES_KEY = "pepertranslator:display-preferences:v1"
+const DEFAULT_DISPLAY_PREFERENCES: DisplayPreferences = {
+  theme: "dark", sourceSize: 20, answerSize: 18, feedbackSize: 16, referenceSize: 16,
+}
+function normalizedDisplayPreferences(raw: unknown): DisplayPreferences {
+  const candidate = raw && typeof raw === "object" ? raw as Partial<DisplayPreferences> : {}
+  const clamp = (value: unknown, fallback: number, lo: number, hi: number) =>
+    typeof value === "number" && Number.isFinite(value) ? Math.round(Math.max(lo, Math.min(hi, value))) : fallback
+  return {
+    theme: candidate.theme === "light" ? "light" : "dark",
+    sourceSize: clamp(candidate.sourceSize, 20, 15, 28),
+    answerSize: clamp(candidate.answerSize, 18, 14, 26),
+    feedbackSize: clamp(candidate.feedbackSize, 16, 12, 22),
+    referenceSize: clamp(candidate.referenceSize, 16, 13, 24),
+  }
+}
+
 type QuizStatus = "idle" | "checking" | "correct" | "partial" | "incorrect"
 
 type KeyPointStatus = "correct" | "warning" | "missing"
 
 type IssueCategory = "omission" | "mistranslation" | "wording" | "terminology"
+type SemanticUnitStatus = "correct" | "partial" | "missing" | "wrong"
+type SemanticImportance = "core" | "support" | "detail"
+
+type SemanticUnit = {
+  id: string
+  source: string
+  translation: string
+  importance: SemanticImportance
+  status: SemanticUnitStatus
+  note: string
+  earnedPoints: number
+  maxPoints: number
+}
+
+type ScoreBreakdown = {
+  meaning: number
+  terminology: number
+  japanese: number
+  rawTotal: number
+  total: number
+  capReason: string
+}
+
+type JapaneseQuality = {
+  level: "natural" | "minor" | "awkward" | "broken"
+  note: string
+}
 
 type SyntaxInsight = {
   summary: string
@@ -76,11 +136,22 @@ type QuizItem = {
   pageRef: number
 }
 
+type ExternalAudit = {
+  provider: "azure" | "local"
+  status: "verified" | "minor_difference" | "disagreement" | "local_only" | "quota_exhausted" | "unavailable"
+  translation: string
+  message: string
+  monthUsage: number
+  monthlySoftLimit: number
+  cached: boolean
+}
+
 type Evaluation = {
   verdict: "correct" | "partial" | "incorrect"
   score: number
   feedback: string
   referenceTranslation: string
+  referenceReview?: { status: string; flags: string[]; revision: string; reviewId: string }
   meaningErrors: string[]
   missingInformation: string[]
   issues: {
@@ -94,6 +165,10 @@ type Evaluation = {
     translation: string
     status: KeyPointStatus
   }[]
+  semanticUnits?: SemanticUnit[]
+  scoreBreakdown?: ScoreBreakdown | null
+  japaneseQuality?: JapaneseQuality | null
+  externalAudit?: ExternalAudit | null
   syntaxInsight: SyntaxInsight | null
 }
 
@@ -101,6 +176,7 @@ type AttemptRecord = {
   answer: string
   evaluation: Evaluation
   createdAt: string
+  graderVersion?: string
 }
 
 type QuestionRecord = {
@@ -111,7 +187,7 @@ type QuestionRecord = {
 }
 
 type SavedSession = {
-  version: 2
+  version: 6
   currentIndex: number
   records: Record<string, QuestionRecord>
 }
@@ -125,14 +201,86 @@ type UploadResponse = {
   document_id: string
   page_count: number
   total_chunks: number
+  document_kind?: "paper" | "slides" | "japanese" | "image_pdf" | "unstructured"
+  source_language?: string
+  quiz_enabled?: boolean
+  quiz_notice?: string
   chunks: {
     id: number
     pageRef: number
     sourceText: string
   }[]
+  library?: {
+    reused?: boolean
+    reused_exact?: boolean
+    reading_ready?: boolean
+    layout_ready?: boolean
+    possible_duplicates?: string[]
+  }
 }
 
-type RightPanelMode = "study" | "japanese"
+type LibraryItem = {
+  document_id: string
+  paper_key: string
+  title: string
+  filenames: string[]
+  page_count: number
+  total_chunks: number
+  added_at: string
+  last_opened_at: string
+  doi?: string | null
+  notes?: string
+  document_kind?: string
+  reading_ready: boolean
+  layout_ready: boolean
+  mono_ready: boolean
+  dual_ready: boolean
+  qa_ready: boolean
+  quality_gate?: "pass" | "fail" | null
+  cache_stale?: boolean
+  variant_count: number
+  variants: {
+    document_id: string
+    filename?: string | null
+    layout_ready: boolean
+    reading_ready: boolean
+    last_opened_at: string
+  }[]
+}
+
+type VocabularyDirection = "en-ja" | "ja-en"
+type VocabularyKind = "term" | "word" | "phrase" | "pattern"
+type VocabularyKindFilter = "all" | VocabularyKind
+
+type VocabularyCard = {
+  cardId: string
+  source: string
+  translation: string
+  kind: VocabularyKind
+  origin: string
+  surfaceForms: string[]
+  contexts: string[]
+  documentIds: string[]
+  seenCount: number
+  duplicateIds: string[]
+  duplicateStatus: "none" | "alias" | "conflict"
+  correctEnJa: number
+  wrongEnJa: number
+  correctJaEn: number
+  wrongJaEn: number
+  lastReviewedAt: string | null
+}
+
+type VocabularyCandidate = {
+  source: string
+  translation: string
+  kind?: VocabularyKind
+  origin?: string
+  surface?: string
+  context?: string
+}
+
+type RightPanelMode = "study" | "japanese" | "vocabulary"
 
 type DocumentTranslationStatus = {
   status: "not_started" | "queued" | "running" | "completed" | "failed"
@@ -304,7 +452,9 @@ type LayoutTranslationStatus = {
 }
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://localhost:8000"
+  process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") || "http://127.0.0.1:8000"
+
+const QUIZ_CLIENT_CACHE_VERSION = "quiz-grader-v1.7.27"
 
 async function requestOpenLayoutOutputFolder(documentId: string) {
   const response = await fetch(
@@ -346,6 +496,50 @@ function sessionStorageKey(documentId: string) {
   return `paper-translator:session:${documentId}`
 }
 
+function normalizeQuizAnswer(text: string) {
+  return text.normalize("NFKC").replace(/\s+/g, "").trim()
+}
+
+function mapVocabularyCards(raw: unknown): VocabularyCard[] {
+  if (!Array.isArray(raw)) return []
+  return raw.flatMap((item) => {
+    if (!item || typeof item !== "object") return []
+    const value = item as Record<string, unknown>
+    const cardId = String(value.card_id ?? "")
+    const source = String(value.source ?? "").trim()
+    const translation = String(value.translation ?? "").trim()
+    if (!cardId || !source || !translation) return []
+    const rawKind = String(value.kind ?? "term")
+    const kind: VocabularyKind = (["term", "word", "phrase", "pattern"] as string[]).includes(rawKind)
+      ? rawKind as VocabularyKind
+      : "term"
+    const surfaceForms = Array.isArray(value.surface_forms)
+      ? value.surface_forms.map((entry) => String(entry)).filter(Boolean)
+      : []
+    const contexts = Array.isArray(value.contexts)
+      ? value.contexts.map((entry) => String(entry)).filter(Boolean)
+      : []
+    return [{
+      cardId,
+      source,
+      translation,
+      kind,
+      origin: String(value.origin ?? "glossary"),
+      surfaceForms,
+      contexts,
+      documentIds: Array.isArray(value.document_ids) ? value.document_ids.map((entry) => String(entry)).filter(Boolean) : [],
+      seenCount: Number(value.seen_count ?? Math.max(1, contexts.length)),
+      duplicateIds: Array.isArray(value.duplicate_ids) ? value.duplicate_ids.map((entry) => String(entry)).filter(Boolean) : [],
+      duplicateStatus: value.duplicate_status === "conflict" ? "conflict" : value.duplicate_status === "alias" ? "alias" : "none",
+      correctEnJa: Number(value.correct_en_ja ?? 0),
+      wrongEnJa: Number(value.wrong_en_ja ?? 0),
+      correctJaEn: Number(value.correct_ja_en ?? 0),
+      wrongJaEn: Number(value.wrong_ja_en ?? 0),
+      lastReviewedAt: value.last_reviewed_at ? String(value.last_reviewed_at) : null,
+    }]
+  })
+}
+
 function hasBilingualKeyPoints(evaluation: Evaluation | null) {
   if (!evaluation || evaluation.keyPoints.length === 0) return true
   return evaluation.keyPoints.every((point) => point.translation?.trim())
@@ -359,6 +553,7 @@ function effectiveEvaluation(record: QuestionRecord | undefined) {
 function needsReview(evaluation: Evaluation | null) {
   if (!evaluation) return false
   if (evaluation.score < 85) return true
+  if ((evaluation.semanticUnits ?? []).some((unit) => unit.status !== "correct")) return true
   if (evaluation.issues.some((issue) => issue.category === "omission" || issue.category === "mistranslation")) {
     return true
   }
@@ -391,22 +586,18 @@ function readSavedSession(documentId: string): SavedSession | null {
     const records = Object.fromEntries(
       Object.entries(parsed.records).map(([key, record]) => {
         const evaluation = record.evaluation ?? null
-        const attempts =
-          Array.isArray(record.attempts) && record.attempts.length > 0
-            ? record.attempts
-            : evaluation
-              ? [
-                  {
-                    answer: record.answer ?? "",
-                    evaluation,
-                    createdAt: record.updatedAt ?? new Date().toISOString(),
-                  },
-                ]
-              : []
+        const rubricCompatible = Boolean(parsed.version === 6 && evaluation && (evaluation.semanticUnits?.length ?? 0) > 0)
+        const attempts = rubricCompatible
+          ? (Array.isArray(record.attempts) && record.attempts.length > 0
+              ? record.attempts.filter((attempt) => (attempt.evaluation.semanticUnits?.length ?? 0) > 0)
+              : evaluation
+                ? [{ answer: record.answer ?? "", evaluation, createdAt: record.updatedAt ?? new Date().toISOString() }]
+                : [])
+          : []
 
-        // Phase 4以前の保存結果には日本語キーポイントが無い場合がある。
-        // 回答と履歴は残しつつ、最新評価だけ無効化して再採点可能にする。
-        const currentEvaluation = hasBilingualKeyPoints(evaluation) ? evaluation : null
+        // Quiz v1.3.8 added relation-role auditing; preserve answers but invalidate older scores. Preserve the learner's answer, but
+        // invalidate old opaque scores so they are not mixed with rubric-based scores.
+        const currentEvaluation = rubricCompatible && hasBilingualKeyPoints(evaluation) ? evaluation : null
 
         return [
           key,
@@ -421,7 +612,7 @@ function readSavedSession(documentId: string): SavedSession | null {
     )
 
     return {
-      version: 2,
+      version: 6,
       currentIndex: parsed.currentIndex,
       records,
     }
@@ -432,6 +623,20 @@ function readSavedSession(documentId: string): SavedSession | null {
 
 
 export default function Page() {
+  const [displayPreferences, setDisplayPreferences] = React.useState<DisplayPreferences>(DEFAULT_DISPLAY_PREFERENCES)
+  const [preferencesReady, setPreferencesReady] = React.useState(false)
+  React.useEffect(() => {
+    try {
+      const stored = window.localStorage.getItem(DISPLAY_PREFERENCES_KEY)
+      if (stored) setDisplayPreferences(normalizedDisplayPreferences(JSON.parse(stored)))
+    } catch { /* No local settings: continue using defaults. */ }
+    setPreferencesReady(true)
+  }, [])
+  React.useEffect(() => {
+    if (!preferencesReady) return
+    try { window.localStorage.setItem(DISPLAY_PREFERENCES_KEY, JSON.stringify(displayPreferences)) }
+    catch { /* Read-only browser storage does not prevent reading. */ }
+  }, [displayPreferences, preferencesReady])
   const [questions, setQuestions] = React.useState<QuizItem[]>([])
   const [currentIndex, setCurrentIndex] = React.useState(0)
   const [answer, setAnswer] = React.useState("")
@@ -440,16 +645,28 @@ export default function Page() {
   const [records, setRecords] = React.useState<Record<string, QuestionRecord>>({})
   const [reviewSequence, setReviewSequence] = React.useState<number[] | null>(null)
 
+  const [gradingReportStatus, setGradingReportStatus] = React.useState<"idle" | "saving" | "saved" | "error">("idle")
+  const [gradingElapsedMs, setGradingElapsedMs] = React.useState(0)
+  const [gradingNotice, setGradingNotice] = React.useState("")
+  const [vocabularyCards, setVocabularyCards] = React.useState<VocabularyCard[]>([])
+  const [vocabularyLoading, setVocabularyLoading] = React.useState(false)
+  const [vocabularyError, setVocabularyError] = React.useState<string | null>(null)
+
   const [paperTitle, setPaperTitle] = React.useState("No paper loaded")
   const [filename, setFilename] = React.useState<string | null>(null)
   const [pageCount, setPageCount] = React.useState(0)
   const [documentId, setDocumentId] = React.useState<string | null>(null)
   const [uploadState, setUploadState] = React.useState<UploadState>("empty")
   const [uploadError, setUploadError] = React.useState<string | null>(null)
-
-  const [reportOpen, setReportOpen] = React.useState(false)
-  const [reportText, setReportText] = React.useState("")
-  const [reportSent, setReportSent] = React.useState(false)
+  const [quizNotice, setQuizNotice] = React.useState("")
+  const [documentKind, setDocumentKind] = React.useState("paper")
+  const [resumeDocumentId, setResumeDocumentId] = React.useState<string | null>(null)
+  const [libraryOpen, setLibraryOpen] = React.useState(false)
+  const [knowledgeGraphOpen, setKnowledgeGraphOpen] = React.useState(false)
+  const [knowledgeGraphInitialDocumentId, setKnowledgeGraphInitialDocumentId] = React.useState<string | null>(null)
+  const [libraryItems, setLibraryItems] = React.useState<LibraryItem[]>([])
+  const [libraryLoading, setLibraryLoading] = React.useState(false)
+  const [libraryError, setLibraryError] = React.useState<string | null>(null)
 
   const [rightMode, setRightMode] = React.useState<RightPanelMode>("study")
   const [documentTranslationStatus, setDocumentTranslationStatus] =
@@ -463,7 +680,7 @@ export default function Page() {
     })
   const [documentTranslation, setDocumentTranslation] =
     React.useState<DocumentTranslationResult | null>(null)
-  const [japaneseViewMode, setJapaneseViewMode] = React.useState<JapaneseViewMode>("reading")
+  const [japaneseViewMode, setJapaneseViewMode] = React.useState<JapaneseViewMode>("layout")
   const [layoutTranslationStatus, setLayoutTranslationStatus] =
     React.useState<LayoutTranslationStatus>({
       status: "not_started",
@@ -488,6 +705,15 @@ export default function Page() {
     })
   const [layoutBatchStatus, setLayoutBatchStatus] = React.useState<LayoutBatchStatus | null>(null)
   const [batchPanelOpen, setBatchPanelOpen] = React.useState(false)
+  // Job tracking is independent of the selected document. No backend translation
+  // is started or cancelled when switching Library documents or right-hand tabs.
+  const activeDocumentRef = React.useRef<string | null>(null)
+  const [trackedJobs, setTrackedJobs] = React.useState<TrackedTranslationJob[]>([])
+  const trackedJobsRef = React.useRef<TrackedTranslationJob[]>([])
+  const [jobMonitorReady, setJobMonitorReady] = React.useState(false)
+  const [jobCenterOpen, setJobCenterOpen] = React.useState(false)
+  const [desktopNotificationsAllowed, setDesktopNotificationsAllowed] = React.useState(false)
+  const announcedThisPage = React.useRef(new Set<string>())
   const [batchUploadProgress, setBatchUploadProgress] = React.useState<BatchUploadProgress>({
     active: false,
     total: 0,
@@ -521,7 +747,7 @@ export default function Page() {
     if (!documentId || questions.length === 0) return
 
     const session: SavedSession = {
-      version: 2,
+      version: 6,
       currentIndex,
       records,
     }
@@ -532,6 +758,125 @@ export default function Page() {
       console.warn("Session save failed:", error)
     }
   }, [currentIndex, documentId, questions.length, records])
+
+  React.useEffect(() => {
+    if (status !== "checking") return
+    const startedAt = performance.now()
+    setGradingElapsedMs(0)
+    const timer = window.setInterval(() => {
+      setGradingElapsedMs(performance.now() - startedAt)
+    }, 100)
+    return () => {
+      setGradingElapsedMs(performance.now() - startedAt)
+      window.clearInterval(timer)
+    }
+  }, [status])
+
+  React.useEffect(() => {
+    try { setTrackedJobs(keepRecentJobs(restoreTrackedJobs(window.localStorage.getItem(JOB_MONITOR_STORAGE_KEY)))) }
+    catch { /* Private browsing still supports in-app notifications for this session. */ }
+    setDesktopNotificationsAllowed(typeof Notification !== "undefined" && Notification.permission === "granted")
+    setJobMonitorReady(true)
+  }, [])
+
+  React.useEffect(() => {
+    if (!jobMonitorReady) return
+    trackedJobsRef.current = trackedJobs
+    try { window.localStorage.setItem(JOB_MONITOR_STORAGE_KEY, JSON.stringify(trackedJobs)) } catch {}
+  }, [trackedJobs, jobMonitorReady])
+
+  // Poll jobs even while another paper is open, while a quiz runs, or while the
+  // vocabulary panel is active. Browser notifications require the window open.
+  React.useEffect(() => {
+    if (!jobMonitorReady) return
+    let stopped = false
+    let polling = false
+    async function pollJobs() {
+      if (polling) return
+      const active = trackedJobsRef.current.filter((job) => !isTerminalJob(job))
+      if (!active.length) return
+      polling = true
+      try {
+        const observations = await Promise.all(active.map(async (job) => {
+          try {
+            const response = await fetch(jobStatusUrl(job, API_BASE_URL), { cache: "no-store" })
+            if (!response.ok) return null // Network or transient API errors must not imply success/failure.
+            return { id: job.id, payload: await response.json() }
+          } catch { return null }
+        }))
+        if (stopped) return
+        const updates = new Map<string, unknown>()
+        for (const entry of observations) if (entry) updates.set(entry.id, entry.payload)
+        if (!updates.size) return
+        setTrackedJobs((previous) => {
+          let changed = false
+          const next = previous.map((job) => {
+            if (!updates.has(job.id)) return job
+            const updated = updateTrackedJob(job, updates.get(job.id))
+            if (updated.status === job.status && updated.progress === job.progress &&
+                updated.error === job.error && updated.missedPolls === job.missedPolls) return job
+            changed = true
+            return updated
+          })
+          return changed ? keepRecentJobs(next) : previous
+        })
+      } finally { polling = false }
+    }
+    void pollJobs()
+    const timer = window.setInterval(() => { void pollJobs() }, 2600)
+    return () => { stopped = true; window.clearInterval(timer) }
+  }, [jobMonitorReady])
+
+  // A terminal transition produces one persistent in-app notice, and an optional
+  // OS notification when the user has explicitly granted permission.
+  React.useEffect(() => {
+    if (!jobMonitorReady) return
+    const fresh = trackedJobs.filter((job) => isTerminalJob(job) && !job.announced && !announcedThisPage.current.has(job.id))
+    if (!fresh.length) return
+    for (const job of fresh) {
+      announcedThisPage.current.add(job.id)
+      if (typeof Notification !== "undefined" && Notification.permission === "granted") {
+        try { new Notification(`PeperTranslator: ${jobStatusLabel(job)}`, { body: job.title }) } catch {}
+      }
+    }
+    setTrackedJobs((previous) => previous.map((job) => fresh.some((item) => item.id === job.id)
+      ? { ...job, announced: true } : job))
+  }, [trackedJobs, jobMonitorReady])
+
+  function trackNewJob(kind: TrackedJobKind, targetId: string, title: string) {
+    const newJob = createTrackedJob(kind, targetId, title)
+    announcedThisPage.current.delete(newJob.id)
+    setTrackedJobs((previous) => keepRecentJobs([newJob, ...previous.filter((job) => job.id !== newJob.id)]))
+  }
+
+  function acknowledgeJob(id: string) {
+    setTrackedJobs((previous) => previous.map((job) => job.id === id ? { ...job, acknowledged: true } : job))
+  }
+
+  function enableDesktopNotifications() {
+    if (typeof Notification === "undefined") return
+    // Only invoked by an explicit button click; never request permission on load.
+    void Notification.requestPermission().then((permission) => setDesktopNotificationsAllowed(permission === "granted"))
+      .catch(() => setDesktopNotificationsAllowed(false))
+  }
+
+  function openTrackedJob(job: TrackedTranslationJob) {
+    acknowledgeJob(job.id)
+    if (job.kind === "batch") {
+      void refreshLayoutBatch(job.targetId, true)
+      return
+    }
+    void openLibraryDocument(job.targetId).then((opened) => {
+      if (!opened) return
+      setJapaneseViewMode(job.kind === "reading" ? "reading" : "layout")
+      setRightMode("japanese")
+    })
+  }
+
+  React.useEffect(() => {
+    void refreshVocabulary()
+    try { setResumeDocumentId(window.localStorage.getItem("pepertranslator:last-document-id")) } catch {}
+  }, [])
 
   React.useEffect(() => {
     if (!documentId) return
@@ -590,6 +935,76 @@ export default function Page() {
     return () => window.clearInterval(timer)
   }, [layoutBatchStatus?.batch_id, layoutBatchStatus?.status])
 
+  async function refreshVocabulary() {
+    setVocabularyLoading(true)
+    setVocabularyError(null)
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/quiz/vocabulary`)
+      const data = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(data?.detail || "単語カードを読み込めませんでした。")
+      setVocabularyCards(mapVocabularyCards(data?.cards))
+    } catch (error) {
+      setVocabularyError(error instanceof Error ? error.message : "単語カードを読み込めませんでした。")
+    } finally {
+      setVocabularyLoading(false)
+    }
+  }
+
+  async function addVocabularyCandidates(candidates: VocabularyCandidate[], questionId: number) {
+    if (!candidates.length) return
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/quiz/vocabulary/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cards: candidates.map((candidate) => ({
+            source: candidate.source,
+            translation: candidate.translation,
+            kind: candidate.kind ?? "term",
+            origin: candidate.origin ?? "glossary",
+            surface: candidate.surface ?? "",
+            context: candidate.context ?? "",
+            document_id: documentId ?? "",
+            question_id: questionId,
+          })),
+        }),
+      })
+      const data = await response.json().catch(() => null)
+      if (response.ok) setVocabularyCards(mapVocabularyCards(data?.cards))
+    } catch (error) {
+      console.warn("Vocabulary auto-add failed:", error)
+    }
+  }
+
+  async function syncVocabularyFromSource(sourceText: string, questionId: number) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/quiz/vocabulary/sync`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          source_text: sourceText,
+          document_id: documentId ?? "",
+          question_id: questionId,
+        }),
+      })
+      const data = await response.json().catch(() => null)
+      if (response.ok) setVocabularyCards(mapVocabularyCards(data?.cards))
+    } catch (error) {
+      console.warn("Vocabulary cache-hit sync failed:", error)
+    }
+  }
+
+  async function reviewVocabularyCard(cardId: string, direction: VocabularyDirection, known: boolean) {
+    const response = await fetch(`${API_BASE_URL}/api/quiz/vocabulary/review`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ card_id: cardId, direction, known }),
+    })
+    const data = await response.json().catch(() => null)
+    if (!response.ok) throw new Error(data?.detail || "単語カードの記録に失敗しました。")
+    await refreshVocabulary()
+  }
+
   async function refreshDocumentTranslation(targetDocumentId: string) {
     try {
       const response = await fetch(`${API_BASE_URL}/api/pdfs/${targetDocumentId}/translation`)
@@ -599,6 +1014,7 @@ export default function Page() {
       }
 
       const nextStatus = data as DocumentTranslationStatus
+      if (activeDocumentRef.current !== targetDocumentId) return
       setDocumentTranslationStatus(nextStatus)
 
       if (nextStatus.status === "completed") {
@@ -609,7 +1025,7 @@ export default function Page() {
         if (!resultResponse.ok) {
           throw new Error(resultData?.detail || "日本語版の読み込みに失敗しました。")
         }
-        setDocumentTranslation(resultData as DocumentTranslationResult)
+        if (activeDocumentRef.current === targetDocumentId) setDocumentTranslation(resultData as DocumentTranslationResult)
       }
     } catch (error) {
       console.error("Document translation status error:", error)
@@ -637,11 +1053,13 @@ export default function Page() {
       if (!response.ok) {
         throw new Error(data?.detail || "全文翻訳を開始できませんでした。")
       }
-      setDocumentTranslationStatus(data as DocumentTranslationStatus)
+      if (activeDocumentRef.current === documentId) setDocumentTranslationStatus(data as DocumentTranslationStatus)
+      if (data?.status === "queued" || data?.status === "running") trackNewJob("reading", documentId, paperTitle)
       if (data?.status === "completed") {
         await refreshDocumentTranslation(documentId)
       }
     } catch (error) {
+      if (activeDocumentRef.current !== documentId) return
       setDocumentTranslationStatus({
         status: "failed",
         progress: 0,
@@ -660,7 +1078,7 @@ export default function Page() {
       if (!response.ok) {
         throw new Error(data?.detail || "レイアウト翻訳の状態取得に失敗しました。")
       }
-      setLayoutTranslationStatus(data as LayoutTranslationStatus)
+      if (activeDocumentRef.current === targetDocumentId) setLayoutTranslationStatus(data as LayoutTranslationStatus)
     } catch (error) {
       console.error("Layout translation status error:", error)
     }
@@ -674,7 +1092,7 @@ export default function Page() {
         throw new Error(data?.detail || "安全な一括生成の状態取得に失敗しました。")
       }
       const next = data as LayoutProductionStatus
-      setLayoutProductionStatus(next)
+      if (activeDocumentRef.current === targetDocumentId) setLayoutProductionStatus(next)
       if (next.status === "completed" || next.status === "failed") {
         await refreshLayoutTranslation(targetDocumentId)
       }
@@ -703,8 +1121,10 @@ export default function Page() {
       if (!response.ok) {
         throw new Error(data?.detail || "レイアウト翻訳を開始できませんでした。")
       }
-      setLayoutTranslationStatus(data as LayoutTranslationStatus)
+      if (activeDocumentRef.current === documentId) setLayoutTranslationStatus(data as LayoutTranslationStatus)
+      if (data?.status === "queued" || data?.status === "running") trackNewJob("layout", documentId, paperTitle)
     } catch (error) {
+      if (activeDocumentRef.current !== documentId) return
       setLayoutTranslationStatus((previous) => ({
         ...previous,
         status: "failed",
@@ -728,8 +1148,10 @@ export default function Page() {
       if (!response.ok) {
         throw new Error(data?.detail || "1ページテストを開始できませんでした。")
       }
+      trackNewJob("preflight", documentId, paperTitle)
       await refreshLayoutTranslation(documentId)
     } catch (error) {
+      if (activeDocumentRef.current !== documentId) return
       setLayoutTranslationStatus((previous) => ({
         ...previous,
         preflight: {
@@ -767,9 +1189,11 @@ export default function Page() {
       if (!response.ok) {
         throw new Error(data?.detail || "安全な一括生成を開始できませんでした。")
       }
-      setLayoutProductionStatus(data as LayoutProductionStatus)
+      if (activeDocumentRef.current === documentId) setLayoutProductionStatus(data as LayoutProductionStatus)
+      if (data?.status === "queued" || data?.status === "running") trackNewJob("production", documentId, paperTitle)
       await refreshLayoutTranslation(documentId)
     } catch (error) {
+      if (activeDocumentRef.current !== documentId) return
       setLayoutProductionStatus({
         status: "failed",
         stage: "queued",
@@ -872,6 +1296,7 @@ export default function Page() {
       if (!response.ok) throw new Error(data?.detail || "バッチを開始できませんでした。")
       const next = data as LayoutBatchStatus
       setLayoutBatchStatus(next)
+      if (next.status === "queued" || next.status === "running") trackNewJob("batch", next.batch_id, `${next.total}件の論文バッチ`)
       try { window.localStorage.setItem("paper-translator:last-layout-batch", next.batch_id) } catch {}
       setBatchUploadProgress({
         active: false,
@@ -889,6 +1314,131 @@ export default function Page() {
     }
   }
 
+  function resetDocumentUi(nextFilename: string | null = null) {
+    activeDocumentRef.current = null
+    setUploadError(null)
+    setQuizNotice("")
+    setDocumentKind("paper")
+    setQuestions([])
+    setCurrentIndex(0)
+    setAnswer("")
+    setStatus("idle")
+    setEvaluation(null)
+    setGradingNotice("")
+    setRecords({})
+    setReviewSequence(null)
+    setRightMode("study")
+    setDocumentTranslation(null)
+    setDocumentTranslationStatus({
+      status: "not_started", progress: 0, translated_segments: 0, total_segments: 0, error: null, updated_at: null,
+    })
+    setJapaneseViewMode("layout")
+    setLayoutTranslationStatus({
+      status: "not_started", progress: 0, error: null, updated_at: null, worker_ready: false, worker_path: null, model: "", mono_ready: false, dual_ready: false, qa: null,
+    })
+    setLayoutProductionStatus({
+      status: "not_started", stage: "idle", progress: 0, error: null, page: 2, updated_at: null,
+    })
+    setReaderPageRequest(null)
+    setReaderViewPage(1)
+    setDocumentId(null)
+    setPageCount(0)
+    setFilename(nextFilename)
+    setPaperTitle(nextFilename ? nextFilename.replace(/\.pdf$/i, "") : "No paper loaded")
+  }
+
+  function applyLoadedDocument(upload: UploadResponse) {
+    activeDocumentRef.current = upload.document_id
+    setFilename(upload.filename)
+    setPaperTitle(upload.title || upload.filename)
+    setDocumentId(upload.document_id)
+    setPageCount(upload.page_count)
+    setQuestions(upload.chunks)
+    setDocumentKind(upload.document_kind ?? "paper")
+    setQuizNotice(upload.quiz_notice ?? "")
+    try {
+      window.localStorage.setItem("pepertranslator:last-document-id", upload.document_id)
+      setResumeDocumentId(upload.document_id)
+    } catch {}
+
+    const savedSession = readSavedSession(upload.document_id)
+    const restoredRecords = savedSession?.records ?? {}
+    const restoredIndex = Math.min(
+      Math.max(savedSession?.currentIndex ?? 0, 0),
+      Math.max(upload.chunks.length - 1, 0)
+    )
+    const restoredQuestion = upload.chunks[restoredIndex]
+    const restoredRecord = restoredQuestion ? restoredRecords[String(restoredQuestion.id)] : undefined
+    setRecords(restoredRecords)
+    setCurrentIndex(restoredIndex)
+    setAnswer(restoredRecord?.answer ?? "")
+    setEvaluation(restoredRecord?.evaluation ?? null)
+    setStatus(restoredRecord?.evaluation?.verdict ?? "idle")
+    setUploadState("ready")
+    void refreshDocumentTranslation(upload.document_id)
+    void refreshLayoutTranslation(upload.document_id)
+    void refreshLayoutProduction(upload.document_id)
+  }
+
+  async function refreshLibrary(openPanel = false) {
+    if (openPanel) setLibraryOpen(true)
+    setLibraryLoading(true)
+    setLibraryError(null)
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/library`)
+      const data = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(data?.detail || "Libraryを読み込めませんでした。")
+      setLibraryItems(Array.isArray(data?.items) ? data.items : [])
+    } catch (error) {
+      setLibraryError(error instanceof Error ? error.message : "Libraryを読み込めませんでした。")
+    } finally {
+      setLibraryLoading(false)
+    }
+  }
+
+  async function exportMobileBundle(targetDocumentId: string): Promise<void> {
+    const response = await fetch(`${API_BASE_URL}/api/offline/export`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ document_ids: [targetDocumentId], include_vocabulary: true }),
+    })
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null)
+      throw new Error(payload?.detail || `オフラインZIPの作成に失敗しました (${response.status})`)
+    }
+    const archive = await response.blob()
+    if (!archive.size) throw new Error("オフラインZIPが空です。")
+    const href = URL.createObjectURL(archive)
+    try {
+      const a = document.createElement("a")
+      a.href = href
+      a.download = `PeperTranslator_Offline_${targetDocumentId.slice(0, 12)}.zip`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+    } finally {
+      window.setTimeout(() => URL.revokeObjectURL(href), 5000)
+    }
+  }
+
+  async function openLibraryDocument(targetDocumentId: string) {
+    setUploadState("uploading")
+    resetDocumentUi(null)
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/library/${targetDocumentId}`)
+      const data = await response.json().catch(() => null)
+      if (!response.ok) throw new Error(data?.detail || "LibraryのPDFを開けませんでした。")
+      applyLoadedDocument(data as UploadResponse)
+      setLibraryOpen(false)
+      void refreshLibrary(false)
+      return true
+    } catch (error) {
+      setUploadState("error")
+      setUploadError(error instanceof Error ? error.message : "LibraryのPDFを開けませんでした。")
+      return false
+    }
+  }
+
   async function loadPdf(file: File) {
     if (!file.name.toLowerCase().endsWith(".pdf") && file.type !== "application/pdf") {
       setUploadState("error")
@@ -897,51 +1447,7 @@ export default function Page() {
     }
 
     setUploadState("uploading")
-    setUploadError(null)
-    setQuestions([])
-    setCurrentIndex(0)
-    setAnswer("")
-    setStatus("idle")
-    setEvaluation(null)
-    setRecords({})
-    setReviewSequence(null)
-    setRightMode("study")
-    setDocumentTranslation(null)
-    setDocumentTranslationStatus({
-      status: "not_started",
-      progress: 0,
-      translated_segments: 0,
-      total_segments: 0,
-      error: null,
-      updated_at: null,
-    })
-    setJapaneseViewMode("reading")
-    setLayoutTranslationStatus({
-      status: "not_started",
-      progress: 0,
-      error: null,
-      updated_at: null,
-      worker_ready: false,
-      worker_path: null,
-      model: "",
-      mono_ready: false,
-      dual_ready: false,
-      qa: null,
-    })
-    setLayoutProductionStatus({
-      status: "not_started",
-      stage: "idle",
-      progress: 0,
-      error: null,
-      page: 2,
-      updated_at: null,
-    })
-    setReaderPageRequest(null)
-    setReaderViewPage(1)
-
-    setDocumentId(null)
-    setFilename(file.name)
-    setPaperTitle(file.name.replace(/\.pdf$/i, ""))
+    resetDocumentUi(file.name)
 
     try {
       const formData = new FormData()
@@ -958,32 +1464,8 @@ export default function Page() {
       }
 
       const upload = data as UploadResponse
-      setFilename(upload.filename)
-      setPaperTitle(upload.title || upload.filename)
-      setDocumentId(upload.document_id)
-      setPageCount(upload.page_count)
-      setQuestions(upload.chunks)
-
-      const savedSession = readSavedSession(upload.document_id)
-      const restoredRecords = savedSession?.records ?? {}
-      const restoredIndex = Math.min(
-        Math.max(savedSession?.currentIndex ?? 0, 0),
-        Math.max(upload.chunks.length - 1, 0)
-      )
-      const restoredQuestion = upload.chunks[restoredIndex]
-      const restoredRecord = restoredQuestion
-        ? restoredRecords[String(restoredQuestion.id)]
-        : undefined
-
-      setRecords(restoredRecords)
-      setCurrentIndex(restoredIndex)
-      setAnswer(restoredRecord?.answer ?? "")
-      setEvaluation(restoredRecord?.evaluation ?? null)
-      setStatus(restoredRecord?.evaluation?.verdict ?? "idle")
-      setUploadState("ready")
-      void refreshDocumentTranslation(upload.document_id)
-      void refreshLayoutTranslation(upload.document_id)
-      void refreshLayoutProduction(upload.document_id)
+      applyLoadedDocument(upload)
+      void refreshLibrary(false)
     } catch (error) {
       console.error("PDF upload error:", error)
       setQuestions([])
@@ -996,6 +1478,39 @@ export default function Page() {
 
   async function submitAnswer() {
     if (!current || !answer.trim() || status === "checking") return
+    setGradingReportStatus("idle")
+    setGradingNotice("")
+
+    const previous = records[String(current.id)]
+    const normalizedAnswer = normalizeQuizAnswer(answer)
+    const localMatch = [...(previous?.attempts ?? [])]
+      .reverse()
+      .find((attempt) =>
+        attempt.graderVersion === QUIZ_CLIENT_CACHE_VERSION &&
+        normalizeQuizAnswer(attempt.answer) === normalizedAnswer
+      )
+    if (localMatch) {
+      setEvaluation(localMatch.evaluation)
+      setStatus(localMatch.evaluation.verdict)
+      setGradingElapsedMs(0)
+      await syncVocabularyFromSource(current.sourceText, current.id)
+      setGradingNotice("同じ回答の保存済み採点を再利用しました。LLM/Azureは呼び出さず、単語カードだけ同期しました。")
+      setRecords((prev) => {
+        const existing = prev[String(current.id)]
+        if (!existing) return prev
+        return {
+          ...prev,
+          [String(current.id)]: {
+            ...existing,
+            answer,
+            evaluation: localMatch.evaluation,
+            updatedAt: new Date().toISOString(),
+          },
+        }
+      })
+      return
+    }
+
     setStatus("checking")
     setEvaluation(null)
 
@@ -1018,11 +1533,24 @@ export default function Page() {
       }
 
       const apiEvaluation = data.evaluation
+      const cacheHit = Boolean(data.cache_hit)
+      setGradingNotice(cacheHit ? "同じ回答のサーバー保存済み採点を再利用しました。" : "")
+      const candidates = Array.isArray(data.vocabulary_candidates) ? data.vocabulary_candidates as VocabularyCandidate[] : []
+      void addVocabularyCandidates(candidates, current.id)
+
       const nextEvaluation: Evaluation = {
         verdict: apiEvaluation.verdict,
         score: apiEvaluation.score,
         feedback: apiEvaluation.feedback,
         referenceTranslation: apiEvaluation.reference_translation,
+        referenceReview: apiEvaluation.reference_review
+          ? {
+              status: String(apiEvaluation.reference_review.status ?? "unchecked"),
+              flags: Array.isArray(apiEvaluation.reference_review.flags) ? apiEvaluation.reference_review.flags : [],
+              revision: String(apiEvaluation.reference_review.revision ?? ""),
+              reviewId: String(apiEvaluation.reference_review.review_id ?? ""),
+            }
+          : undefined,
         meaningErrors: apiEvaluation.meaning_errors ?? [],
         missingInformation: apiEvaluation.missing_information ?? [],
         issues: (apiEvaluation.issues ?? []).map(
@@ -1039,6 +1567,54 @@ export default function Page() {
           })
         ),
         keyPoints: apiEvaluation.key_points ?? [],
+        semanticUnits: (apiEvaluation.semantic_units ?? []).map(
+          (unit: {
+            id?: string
+            source?: string
+            translation?: string
+            importance?: SemanticImportance
+            status?: SemanticUnitStatus
+            note?: string
+            earned_points?: number
+            max_points?: number
+          }) => ({
+            id: unit.id ?? "",
+            source: unit.source ?? "",
+            translation: unit.translation ?? "",
+            importance: unit.importance ?? "support",
+            status: unit.status ?? "partial",
+            note: unit.note ?? "",
+            earnedPoints: unit.earned_points ?? 0,
+            maxPoints: unit.max_points ?? 0,
+          })
+        ),
+        scoreBreakdown: apiEvaluation.score_breakdown
+          ? {
+              meaning: apiEvaluation.score_breakdown.meaning ?? 0,
+              terminology: apiEvaluation.score_breakdown.terminology ?? 15,
+              japanese: apiEvaluation.score_breakdown.japanese ?? 15,
+              rawTotal: apiEvaluation.score_breakdown.raw_total ?? apiEvaluation.score,
+              total: apiEvaluation.score_breakdown.total ?? apiEvaluation.score,
+              capReason: apiEvaluation.score_breakdown.cap_reason ?? "",
+            }
+          : null,
+        japaneseQuality: apiEvaluation.japanese_quality
+          ? {
+              level: apiEvaluation.japanese_quality.level ?? "natural",
+              note: apiEvaluation.japanese_quality.note ?? "",
+            }
+          : null,
+        externalAudit: apiEvaluation.external_audit
+          ? {
+              provider: apiEvaluation.external_audit.provider ?? "local",
+              status: apiEvaluation.external_audit.status ?? "local_only",
+              translation: apiEvaluation.external_audit.translation ?? "",
+              message: apiEvaluation.external_audit.message ?? "",
+              monthUsage: apiEvaluation.external_audit.month_usage ?? 0,
+              monthlySoftLimit: apiEvaluation.external_audit.monthly_soft_limit ?? 0,
+              cached: Boolean(apiEvaluation.external_audit.cached),
+            }
+          : null,
         syntaxInsight:
           apiEvaluation.syntax_focus?.needed && Array.isArray(apiEvaluation.syntax_focus?.relations)
             ? {
@@ -1068,6 +1644,7 @@ export default function Page() {
           answer,
           evaluation: nextEvaluation,
           createdAt: new Date().toISOString(),
+          graderVersion: QUIZ_CLIENT_CACHE_VERSION,
         }
 
         return {
@@ -1083,7 +1660,43 @@ export default function Page() {
     } catch (error) {
       console.error("Scoring API error:", error)
       setStatus("idle")
+      setGradingNotice("")
       alert(error instanceof Error ? error.message : "採点に失敗しました。")
+    }
+  }
+
+  async function reportBadGrading() {
+    if (!current || !evaluation || gradingReportStatus === "saving") return
+    setGradingReportStatus("saving")
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/quiz/grading-report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          document_id: documentId ?? "",
+          paper_title: paperTitle,
+          filename: filename ?? "",
+          question_id: current.id,
+          page_ref: current.pageRef,
+          source_text: current.sourceText,
+          user_answer: answer,
+          evaluation,
+          note: "ユーザーがUIから採点異常として報告",
+        }),
+      })
+      if (!response.ok) throw new Error("改善ログの保存に失敗しました。")
+      setGradingReportStatus("saved")
+    } catch (error) {
+      console.error("quiz grading report error", error)
+      setGradingReportStatus("error")
+    }
+  }
+
+  async function openGradingReportFolder() {
+    try {
+      await fetch(`${API_BASE_URL}/api/quiz/grading-report/open-folder`, { method: "POST" })
+    } catch (error) {
+      console.error("open grading report folder error", error)
     }
   }
 
@@ -1095,6 +1708,7 @@ export default function Page() {
     setAnswer(record?.answer ?? "")
     setEvaluation(record?.evaluation ?? null)
     setStatus(record?.evaluation?.verdict ?? "idle")
+    setGradingReportStatus("idle")
   }
 
   function openReviewQuestion(index: number) {
@@ -1103,19 +1717,9 @@ export default function Page() {
     const record = records[String(nextQuestion.id)]
     setCurrentIndex(index)
     setAnswer(record?.answer ?? "")
-    setEvaluation(null)
-    setStatus("idle")
-
-    if (record) {
-      setRecords((prev) => ({
-        ...prev,
-        [String(nextQuestion.id)]: {
-          ...record,
-          evaluation: null,
-          updatedAt: new Date().toISOString(),
-        },
-      }))
-    }
+    setEvaluation(record?.evaluation ?? null)
+    setStatus(record?.evaluation?.verdict ?? "idle")
+    setGradingReportStatus("idle")
   }
 
   function goNext() {
@@ -1138,6 +1742,15 @@ export default function Page() {
     }
     if (currentIndex <= 0) return
     openQuestion(currentIndex - 1)
+  }
+
+  function jumpToNavigationPosition(position: number) {
+    if (!Number.isFinite(position) || position < 0 || position >= navigationTotal) return
+    if (reviewSequence) {
+      openReviewQuestion(reviewSequence[position])
+      return
+    }
+    openQuestion(position)
   }
 
   function toggleReviewMode() {
@@ -1168,6 +1781,7 @@ export default function Page() {
     if (!current) return
     setStatus("idle")
     setEvaluation(null)
+    setGradingNotice("")
     setRecords((prev) => {
       const previous = prev[String(current.id)]
       if (!previous) return prev
@@ -1187,9 +1801,6 @@ export default function Page() {
     setCurrentIndex(0)
     setAnswer("")
     setStatus("idle")
-    setReportOpen(false)
-    setReportText("")
-    setReportSent(false)
     setEvaluation(null)
     setRecords({})
     setReviewSequence(null)
@@ -1203,24 +1814,21 @@ export default function Page() {
     }
   }
 
-  function submitReport() {
-    if (!reportText.trim()) return
-    setReportSent(true)
-    setReportText("")
-    window.setTimeout(() => {
-      setReportSent(false)
-      setReportOpen(false)
-    }, 2000)
-  }
-
   return (
     <main
       className={cn(
         inter.className,
         jetBrainsMono.variable,
         "h-screen overflow-hidden bg-zinc-950 text-zinc-50 antialiased",
+        displayPreferences.theme === "light" && "pt-theme-light",
         "selection:bg-indigo-500/20 selection:text-indigo-100"
       )}
+      style={{
+        "--pt-source-size": `${displayPreferences.sourceSize}px`,
+        "--pt-answer-size": `${displayPreferences.answerSize}px`,
+        "--pt-feedback-size": `${displayPreferences.feedbackSize}px`,
+        "--pt-reference-size": `${displayPreferences.referenceSize}px`,
+      } as React.CSSProperties}
     >
       <div className="flex h-full flex-col">
         <TopBar
@@ -1231,17 +1839,29 @@ export default function Page() {
           reviewMode={reviewMode}
           onToggleReview={toggleReviewMode}
           onReset={resetQuiz}
+          onOpenLibrary={() => void refreshLibrary(true)}
           documentReady={Boolean(documentId)}
           rightMode={rightMode}
           translationStatus={documentTranslationStatus}
-          onToggleJapanese={() => setRightMode((mode) => (mode === "study" ? "japanese" : "study"))}
+          activeJobCount={trackedJobs.filter((job) => !isTerminalJob(job)).length}
+          unreadJobCount={trackedJobs.filter((job) => isTerminalJob(job) && !job.acknowledged).length}
+          onShowJobs={() => setJobCenterOpen((value) => !value)}
+          onToggleJapanese={() => { setJapaneseViewMode("layout"); setRightMode((mode) => (mode === "japanese" ? "study" : "japanese")) }}
+          vocabularyCount={vocabularyCards.length}
+          onToggleVocabulary={() => {
+            setRightMode((mode) => (mode === "vocabulary" ? "study" : "vocabulary"))
+            void refreshVocabulary()
+          }}
+          displayPreferences={displayPreferences}
+          onDisplayPreferencesChange={setDisplayPreferences}
         />
 
-        <ResizablePanelGroup direction="horizontal" className="min-h-0 flex-1">
+        <ResizablePanelGroup orientation="horizontal" resizeTargetMinimumSize={{ fine: 18, coarse: 28 }} className="min-h-0 flex-1">
           <ResizablePanel
-            defaultSize={48}
-            minSize={34}
-            maxSize={64}
+            id="pdf-reader"
+            defaultSize="48%"
+            minSize="34%"
+            maxSize="64%"
             className="min-w-0"
           >
             <PdfPanel
@@ -1258,24 +1878,30 @@ export default function Page() {
               onShowBatch={() => setBatchPanelOpen(true)}
               requestedPage={rightMode === "japanese" ? readerPageRequest : null}
               onViewPageChange={setReaderViewPage}
+              canResume={Boolean(resumeDocumentId && !documentId)}
+              onResume={() => { if (resumeDocumentId) void openLibraryDocument(resumeDocumentId) }}
             />
           </ResizablePanel>
 
           <ResizableHandle
+            withHandle
+            title="左右にドラッグしてPDFと学習画面の幅を変更（ダブルクリックで初期化）"
+            aria-label="PDFと学習画面の表示幅を変更"
             className={cn(
-              "relative w-px bg-white/[0.05] transition-colors duration-200",
+              "relative z-10 w-2 bg-indigo-500/15 transition-colors duration-200 cursor-col-resize hover:bg-indigo-500/35",
               "data-[resize-handle-state=hover]:bg-indigo-500/25",
               "data-[resize-handle-state=drag]:bg-indigo-500/45",
-              "after:absolute after:left-1/2 after:top-1/2 after:h-8 after:w-1",
+              "after:absolute after:left-1/2 after:top-1/2 after:h-10 after:w-1.5",
               "after:-translate-x-1/2 after:-translate-y-1/2",
-              "after:rounded-full after:bg-zinc-800 after:transition-colors after:duration-200"
+              "after:rounded-full after:bg-indigo-400/55 after:transition-colors after:duration-200"
             )}
           />
 
           <ResizablePanel
-            defaultSize={52}
-            minSize={36}
-            maxSize={66}
+            id="study-pane"
+            defaultSize="52%"
+            minSize="36%"
+            maxSize="66%"
             className="min-w-0"
           >
             {rightMode === "study" ? (
@@ -1291,18 +1917,40 @@ export default function Page() {
                 submitAnswer={submitAnswer}
                 goNext={goNext}
                 goPrevious={goPrevious}
+                onJump={jumpToNavigationPosition}
                 isLastQuestion={isLastQuestion}
                 score={completedCount}
                 evaluation={evaluation}
                 attempts={currentAttempts}
                 onRetry={startRevision}
-                reportOpen={reportOpen}
-                setReportOpen={setReportOpen}
-                reportText={reportText}
-                setReportText={setReportText}
-                reportSent={reportSent}
-                submitReport={submitReport}
+                gradingReportStatus={gradingReportStatus}
+                onReportGrading={reportBadGrading}
+                onOpenGradingReports={openGradingReportFolder}
+                gradingElapsedMs={gradingElapsedMs}
+                gradingNotice={gradingNotice}
                 uploadState={uploadState}
+                quizNotice={quizNotice}
+                onOpenJapanese={() => { setJapaneseViewMode("layout"); setRightMode("japanese") }}
+              />
+            ) : rightMode === "vocabulary" ? (
+              <VocabularyPanel
+                cards={vocabularyCards}
+                loading={vocabularyLoading}
+                error={vocabularyError}
+                onRefresh={() => void refreshVocabulary()}
+                onReview={(cardId, direction, known) => reviewVocabularyCard(cardId, direction, known)}
+                onBackToStudy={() => setRightMode("study")}
+                documentId={documentId}
+                sourceContext={current?.sourceText ?? ""}
+                onManualAdd={async (source, translation, kind, context) => {
+                  const response = await fetch(`${API_BASE_URL}/api/quiz/vocabulary/add`, {
+                    method: "POST", headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ cards: [{ source, translation, kind, origin: "manual", context, document_id: documentId ?? "", question_id: current?.id ?? null }] }),
+                  })
+                  const payload = await response.json().catch(() => null)
+                  if (!response.ok) throw new Error(payload?.detail || "語彙の追加に失敗しました")
+                  setVocabularyCards(mapVocabularyCards(payload?.cards))
+                }}
               />
             ) : (
               <JapaneseReaderPanel
@@ -1327,10 +1975,66 @@ export default function Page() {
                   setReaderViewPage(page)
                 }}
                 onBackToStudy={() => setRightMode("study")}
+                documentKind={documentKind}
               />
             )}
           </ResizablePanel>
         </ResizablePanelGroup>
+
+        {libraryOpen && (
+          <LibraryPanel
+            items={libraryItems}
+            loading={libraryLoading}
+            error={libraryError}
+            onClose={() => setLibraryOpen(false)}
+            onRefresh={() => void refreshLibrary(false)}
+            onOpen={(targetDocumentId) => void openLibraryDocument(targetDocumentId)}
+            onExportOffline={exportMobileBundle}
+            onOpenGraph={(targetDocumentId) => {
+              setKnowledgeGraphInitialDocumentId(targetDocumentId)
+              setKnowledgeGraphOpen(true)
+            }}
+            onSaveNotes={async (targetDocumentId, notes) => {
+              const response = await fetch(`${API_BASE_URL}/api/library/${targetDocumentId}/notes`, {
+                method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ notes }),
+              })
+              const result = await response.json().catch(() => null)
+              if (!response.ok) throw new Error(result?.detail || "メモ保存に失敗しました")
+              await refreshLibrary(false)
+            }}
+          />
+        )}
+
+        {knowledgeGraphOpen && (
+          <KnowledgeGraphPanel
+            apiBase={API_BASE_URL}
+            initialDocumentId={knowledgeGraphInitialDocumentId}
+            onClose={() => setKnowledgeGraphOpen(false)}
+            onOpenDocument={(id) => {
+              setKnowledgeGraphOpen(false)
+              void openLibraryDocument(id)
+            }}
+          />
+        )}
+
+        {jobCenterOpen && (
+          <JobCenterPanel jobs={trackedJobs} desktopNotificationsAllowed={desktopNotificationsAllowed}
+            onEnableDesktopNotifications={enableDesktopNotifications}
+            onClose={() => setJobCenterOpen(false)} onAcknowledge={acknowledgeJob}
+            onOpen={openTrackedJob} />
+        )}
+
+        {trackedJobs.filter((job) => isTerminalJob(job) && !job.acknowledged).slice(0, 1).map((job) => (
+          <div key={job.id} role="status" aria-live="polite"
+            className="fixed bottom-5 left-5 z-[70] w-[360px] max-w-[calc(100vw-40px)] rounded-xl border border-indigo-500/30 bg-zinc-900 p-4 shadow-2xl">
+            <p className="text-sm font-medium text-zinc-100">{jobStatusLabel(job)}</p>
+            <p className="mt-1 truncate text-xs text-zinc-400" title={job.title}>{job.title}</p>
+            <div className="mt-3 flex gap-3 text-xs">
+              <button onClick={() => openTrackedJob(job)} className="text-indigo-300 hover:underline">結果を確認</button>
+              <button onClick={() => acknowledgeJob(job.id)} className="text-zinc-400 hover:underline">閉じる</button>
+            </div>
+          </div>
+        ))}
 
         {batchPanelOpen && (
           <BatchQueuePanel
@@ -1360,10 +2064,18 @@ function TopBar({
   reviewMode,
   onToggleReview,
   onReset,
+  onOpenLibrary,
   documentReady,
   rightMode,
   translationStatus,
+  activeJobCount,
+  unreadJobCount,
+  onShowJobs,
   onToggleJapanese,
+  vocabularyCount,
+  onToggleVocabulary,
+  displayPreferences,
+  onDisplayPreferencesChange,
 }: {
   chapter: string
   score: number
@@ -1372,13 +2084,22 @@ function TopBar({
   reviewMode: boolean
   onToggleReview: () => void
   onReset: () => void
+  onOpenLibrary: () => void
   documentReady: boolean
   rightMode: RightPanelMode
   translationStatus: DocumentTranslationStatus
+  activeJobCount: number
+  unreadJobCount: number
+  onShowJobs: () => void
   onToggleJapanese: () => void
+  vocabularyCount: number
+  onToggleVocabulary: () => void
+  displayPreferences: DisplayPreferences
+  onDisplayPreferencesChange: React.Dispatch<React.SetStateAction<DisplayPreferences>>
 }) {
+  const [showDisplaySettings, setShowDisplaySettings] = React.useState(false)
   return (
-    <header className="flex h-[72px] shrink-0 items-center justify-between border-b border-white/[0.06] bg-zinc-900/40 px-5 backdrop-blur-sm">
+    <header className="relative z-30 flex h-[72px] shrink-0 items-center justify-between border-b border-white/[0.06] bg-zinc-900/40 px-5 backdrop-blur-sm">
       <div className="flex min-w-0 items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-500/[0.12]">
@@ -1386,11 +2107,8 @@ function TopBar({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[15px] font-semibold uppercase tracking-[0.12em] text-zinc-200">
-              Translate Quiz
-            </span>
-            <span className="rounded border border-indigo-500/20 bg-indigo-500/[0.08] px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-indigo-400">
-              Beta
+            <span className="text-[15px] font-semibold tracking-[0.08em] text-zinc-200">
+              PeperTranslator
             </span>
           </div>
         </div>
@@ -1398,7 +2116,12 @@ function TopBar({
         <div className="h-8 w-px bg-white/[0.07]" />
 
         <nav className="flex min-w-0 items-center gap-2 text-[14px] text-zinc-500">
-          <span className="truncate text-zinc-400">Library</span>
+          <button
+            onClick={onOpenLibrary}
+            className="rounded-md px-2 py-1 text-zinc-400 transition-colors hover:bg-white/[0.05] hover:text-zinc-100"
+          >
+            Library
+          </button>
           <ChevronRight className="h-3.5 w-3.5 text-zinc-700" />
           <span className="truncate text-zinc-400">Research Papers</span>
           <ChevronRight className="h-3.5 w-3.5 text-zinc-700" />
@@ -1407,6 +2130,11 @@ function TopBar({
       </div>
 
       <div className="flex items-center gap-3">
+        <Button variant="ghost" size="sm" onClick={onShowJobs} title="別の論文で作業中でも翻訳の進捗と結果を確認"
+          className="h-9 rounded-md border border-white/[0.06] bg-white/[0.025] px-3 text-[13px] text-zinc-300 hover:bg-white/[0.05]">
+          <Bell className="mr-1.5 h-4 w-4" />ジョブ {activeJobCount}
+          {unreadJobCount > 0 && <span className="ml-1 rounded-full bg-indigo-500/25 px-1.5 text-[11px] text-indigo-200">{unreadJobCount}</span>}
+        </Button>
         <div className="hidden items-center gap-1.5 rounded-md border border-white/[0.06] bg-white/[0.03] px-3 py-1.5 text-[13px] text-zinc-400 md:flex">
           <Zap className="h-3 w-3 text-amber-400/60" />
           <span className="font-mono text-zinc-200">{score}</span>
@@ -1434,6 +2162,22 @@ function TopBar({
         <Button
           variant="ghost"
           size="sm"
+          onClick={onToggleVocabulary}
+          title="論文で出てきた専門用語・一般単語・フレーズ・構文をカードで確認します"
+          className={cn(
+            "h-9 rounded-md border px-3 text-[13px] transition-all duration-150",
+            rightMode === "vocabulary"
+              ? "border-indigo-500/25 bg-indigo-500/[0.10] text-indigo-300 hover:bg-indigo-500/[0.14]"
+              : "border-white/[0.06] bg-white/[0.025] text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"
+          )}
+        >
+          <BookOpen className="mr-1.5 h-3.5 w-3.5" />
+          語彙 {vocabularyCount}
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={onToggleJapanese}
           disabled={!documentReady}
           title="論文本文をOllamaで自動翻訳し、日本語版として読みます"
@@ -1453,6 +2197,46 @@ function TopBar({
               : "日本語版"}
         </Button>
 
+        <div className="relative">
+          <Button type="button" variant="ghost" size="sm"
+            aria-expanded={showDisplaySettings} aria-controls="pt-display-settings"
+            onClick={() => setShowDisplaySettings((value) => !value)}
+            className="h-9 rounded-md border border-white/[0.06] bg-white/[0.025] px-3 text-[13px] text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-100">
+            <Settings2 className="mr-1.5 h-4 w-4" />表示設定
+          </Button>
+          {showDisplaySettings && (
+            <div id="pt-display-settings" role="dialog" aria-label="表示設定" className="pt-display-settings absolute right-0 top-11 z-[60] w-[320px] max-w-[calc(100vw-24px)] rounded-xl border border-white/10 bg-zinc-900 p-4 shadow-2xl">
+              <div className="mb-4 flex items-center justify-between gap-2"><p className="text-sm font-semibold text-zinc-100">表示設定</p><button type="button" className="text-xs text-zinc-400 hover:text-zinc-100" onClick={() => setShowDisplaySettings(false)}>閉じる</button></div>
+              <p className="mb-2 text-xs text-zinc-400">画面テーマ</p>
+              <div className="mb-4 grid grid-cols-2 gap-2">
+                {(["dark", "light"] as UiTheme[]).map((theme) => (
+                  <button type="button" key={theme} aria-pressed={displayPreferences.theme === theme}
+                    onClick={() => onDisplayPreferencesChange((previous) => ({ ...previous, theme }))}
+                    className={cn("flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm", displayPreferences.theme === theme ? "border-indigo-500 bg-indigo-500/15 text-indigo-300" : "border-white/10 text-zinc-400")}>
+                    {theme === "dark" ? <Moon className="h-4 w-4"/> : <Sun className="h-4 w-4"/>}{theme === "dark" ? "ダーク" : "ライト"}
+                  </button>
+                ))}
+              </div>
+              <p className="mb-3 text-xs text-zinc-400">文字サイズ（タイトルや操作ボタンは変更しません）</p>
+              {([
+                { key: "sourceSize", label: "英文問題", min: 15, max: 28 },
+                { key: "answerSize", label: "自分の訳文", min: 14, max: 26 },
+                { key: "referenceSize", label: "模範訳", min: 13, max: 24 },
+                { key: "feedbackSize", label: "採点解説", min: 12, max: 22 },
+              ] as const).map(({ key, label, min, max }) => (
+                <label key={key} className="mb-3 block">
+                  <span className="mb-1 flex justify-between text-xs text-zinc-300"><span>{label}</span><span className="font-mono">{displayPreferences[key]} px</span></span>
+                  <input type="range" min={min} max={max} step={1} value={displayPreferences[key]}
+                    onChange={(event) => { const next = Number(event.target.value); onDisplayPreferencesChange((old) => ({ ...old, [key]: next })) }}
+                    className="w-full accent-indigo-500"/>
+                </label>
+              ))}
+              <button type="button" onClick={() => onDisplayPreferencesChange(DEFAULT_DISPLAY_PREFERENCES)} className="mt-1 rounded-md border border-white/10 px-3 py-2 text-xs text-zinc-400 hover:bg-white/5">標準設定に戻す</button>
+              <p className="mt-3 text-[11px] text-zinc-500">このPCにのみ設定を保存します。PDF原本・学習履歴は変更しません。</p>
+            </div>
+          )}
+        </div>
+
         <div className="hidden h-6 w-px bg-white/[0.07] md:block" />
 
         <Button
@@ -1465,28 +2249,6 @@ function TopBar({
           Reset
         </Button>
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 rounded-lg text-zinc-500 transition-all duration-150 hover:bg-white/[0.04] hover:text-zinc-200"
-        >
-          <Keyboard className="h-3.5 w-3.5" />
-        </Button>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-9 w-9 rounded-lg text-zinc-500 transition-all duration-150 hover:bg-white/[0.04] hover:text-zinc-200"
-        >
-          <Settings className="h-3.5 w-3.5" />
-        </Button>
-
-        <button className="flex h-10 items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.04] pl-1.5 pr-2.5 transition-all duration-150 hover:bg-white/[0.06]">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-[12px] font-medium text-zinc-300">
-            TM
-          </span>
-          <ChevronDown className="h-3 w-3 text-zinc-600" />
-        </button>
       </div>
     </header>
   )
@@ -1506,6 +2268,8 @@ function PdfPanel({
   onShowBatch,
   requestedPage,
   onViewPageChange,
+  canResume,
+  onResume,
 }: {
   current: QuizItem | null
   documentId: string | null
@@ -1520,6 +2284,8 @@ function PdfPanel({
   onShowBatch: () => void
   requestedPage: number | null
   onViewPageChange: (page: number) => void
+  canResume: boolean
+  onResume: () => void
 }) {
   const fileInputRef = React.useRef<HTMLInputElement>(null)
   const batchFileInputRef = React.useRef<HTMLInputElement>(null)
@@ -1770,7 +2536,7 @@ function PdfPanel({
                 </div>
               </div>
             ) : (
-              <div className="flex h-full items-center justify-center p-6">
+              <div className="flex h-full flex-col items-center justify-center p-6">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -1779,11 +2545,16 @@ function PdfPanel({
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-indigo-500/15 bg-indigo-500/[0.08]">
                     <FileText className="h-4 w-4 text-indigo-400/75" />
                   </div>
-                  <p className="mt-4 text-[14px] font-medium text-zinc-300">論文PDFを選択</p>
+                  <p className="mt-4 text-[14px] font-medium text-zinc-300">PDFを選択して開始</p>
                   <p className="mt-2 text-[12px] leading-relaxed text-zinc-600">
-                    本文を抽出し、翻訳問題を自動で作成します
+                    英語論文はクイズに、スライドや日本語資料は閲覧用に登録します
                   </p>
                 </button>
+                {canResume && (
+                  <button type="button" onClick={onResume} className="mt-4 text-[12px] text-indigo-300 hover:text-indigo-100">
+                    前回の資料を再開する →
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -1839,6 +2610,52 @@ function PdfPanel({
         </div>
       </div>
     </section>
+  )
+}
+
+function JobCenterPanel({
+  jobs, desktopNotificationsAllowed, onEnableDesktopNotifications, onClose, onAcknowledge, onOpen,
+}: {
+  jobs: TrackedTranslationJob[]
+  desktopNotificationsAllowed: boolean
+  onEnableDesktopNotifications: () => void
+  onClose: () => void
+  onAcknowledge: (id: string) => void
+  onOpen: (job: TrackedTranslationJob) => void
+}) {
+  const ordered = [...jobs].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  const activeCount = jobs.filter((job) => !isTerminalJob(job)).length
+  return (
+    <aside role="dialog" aria-label="翻訳ジョブ" className="fixed right-5 top-[82px] z-[80] flex max-h-[72vh] w-[390px] max-w-[calc(100vw-40px)] flex-col overflow-hidden rounded-xl border border-white/10 bg-zinc-900 shadow-2xl">
+      <div className="flex items-center justify-between border-b border-white/10 p-4">
+        <div><p className="text-sm font-semibold text-zinc-100">翻訳ジョブ</p><p className="mt-1 text-xs text-zinc-400">実行中 {activeCount} 件 · 別論文で学習を続けられます</p></div>
+        <button onClick={onClose} aria-label="ジョブ一覧を閉じる" className="text-zinc-400 hover:text-zinc-100"><XCircle className="h-4 w-4" /></button>
+      </div>
+      <div className="border-b border-white/10 px-4 py-3 text-xs text-zinc-400">
+        {desktopNotificationsAllowed ? "OS通知：許可済み" : (
+          <button onClick={onEnableDesktopNotifications} className="text-indigo-300 hover:underline">OSの完了通知を有効化（任意）</button>
+        )}
+        <p className="mt-1 text-[11px] text-zinc-500">アプリが開いている間に監視します。PCのスリープ中やアプリ終了後は通知できません。</p>
+      </div>
+      <div className="min-h-0 overflow-y-auto p-3">
+        {!ordered.length && <p className="px-2 py-4 text-sm text-zinc-500">監視対象の翻訳はありません。</p>}
+        {ordered.map((job) => (
+          <div key={job.id} className="mb-2 rounded-lg border border-white/10 p-3">
+            <div className="flex items-start justify-between gap-2">
+              <p className="min-w-0 truncate text-sm text-zinc-200" title={job.title}>{job.title}</p>
+              {!job.acknowledged && isTerminalJob(job) && <span className="shrink-0 text-[10px] text-indigo-300">新着</span>}
+            </div>
+            <p className={cn("mt-1 text-xs", job.status === "completed" ? "text-emerald-300" : isTerminalJob(job) ? "text-amber-300" : "text-indigo-300")}>{jobStatusLabel(job)}</p>
+            {!isTerminalJob(job) && <div className="mt-2 h-1.5 rounded-full bg-white/10"><div className="h-full rounded-full bg-indigo-400" style={{width: `${job.progress}%`}} /></div>}
+            {job.error && <p className="mt-2 line-clamp-3 whitespace-pre-wrap text-[11px] text-zinc-400" title={job.error}>{job.error}</p>}
+            <div className="mt-2 flex gap-3 text-xs">
+              <button onClick={() => onOpen(job)} className="text-indigo-300 hover:underline">{job.kind === "batch" ? "バッチを確認" : "論文を開く"}</button>
+              {isTerminalJob(job) && !job.acknowledged && <button onClick={() => onAcknowledge(job.id)} className="text-zinc-400 hover:underline">確認済み</button>}
+            </div>
+          </div>
+        ))}
+      </div>
+    </aside>
   )
 }
 
@@ -2036,6 +2853,7 @@ function JapaneseReaderPanel({
   onRerunLayoutProduction,
   onOpenPage,
   onBackToStudy,
+  documentKind,
 }: {
   documentId: string | null
   pageCount: number
@@ -2055,6 +2873,7 @@ function JapaneseReaderPanel({
   onRerunLayoutProduction: () => void
   onOpenPage: (page: number) => void
   onBackToStudy: () => void
+  documentKind: string
 }) {
   const pages = React.useMemo(() => {
     const grouped = new Map<number, TranslatedSegment[]>()
@@ -2093,8 +2912,13 @@ function JapaneseReaderPanel({
     }
   }
 
+  if (documentKind === "japanese") {
+    return <section className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center"><BookOpen className="h-6 w-6 text-indigo-400"/><h3 className="text-lg text-zinc-200">このPDFは日本語資料です</h3><p className="max-w-md text-sm leading-relaxed text-zinc-400">英文翻訳クイズと日本語への再翻訳は行いません。左側のPDFで内容を閲覧してください。Libraryには保存されています。</p><button onClick={onBackToStudy} className="rounded-md border border-white/10 px-3 py-2 text-xs text-zinc-400">学習画面へ戻る</button></section>
+  }
+
   return (
     <section className="flex h-full min-w-0 flex-col bg-zinc-950">
+      {documentKind === "slides" && <p className="border-b border-amber-500/15 bg-amber-500/5 px-5 py-3 text-xs leading-relaxed text-amber-200/80">スライドPDFの日本語レイアウト翻訳はベータ版です。図表・箇条書きの品質は未保証で、QA不合格なら停止します。</p>}
       <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/[0.06] bg-zinc-900/30 px-5">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
@@ -2152,7 +2976,7 @@ function JapaneseReaderPanel({
               className="h-9 rounded-md border border-white/[0.06] bg-white/[0.025] px-3 text-[12px] text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-100"
             >
               <Download className="mr-1.5 h-3.5 w-3.5" />
-              日本語PDF
+              {layoutStatus.qa?.quality_gate === "fail" ? "確認用PDF" : "日本語PDF"}
             </Button>
           )}
           {viewMode === "layout" && layoutStatus.dual_ready && layoutDualUrl && (
@@ -2335,7 +3159,12 @@ function LayoutTranslationPanel({
   const [zoom, setZoom] = React.useState(1)
   const [loading, setLoading] = React.useState(false)
   const [showQa, setShowQa] = React.useState(false)
-  const ready = status.status === "completed" && status.mono_ready
+  // Phase94: an existing PDF can be viewed as a diagnostic artifact even if
+  // Postflight QA fails.  The backend status and QA gate remain unchanged.
+  const ready = status.mono_ready && (
+    status.status === "completed" ||
+    (status.status === "failed" && status.qa?.quality_gate === "fail")
+  )
   const running = status.status === "queued" || status.status === "running"
   const productionRunning = productionStatus.status === "queued" || productionStatus.status === "running"
   const productionFailed = productionStatus.status === "failed"
@@ -2406,7 +3235,7 @@ function LayoutTranslationPanel({
     )
   }
 
-  if (productionFailed && status.status !== "completed") {
+  if (productionFailed && !ready) {
     return (
       <div className="flex min-h-0 flex-1 items-center justify-center p-8">
         <div className="w-full max-w-xl rounded-2xl border border-red-500/[0.12] bg-red-950/10 p-6">
@@ -2423,7 +3252,7 @@ function LayoutTranslationPanel({
     )
   }
 
-  if (status.status === "failed") {
+  if (status.status === "failed" && !ready) {
     return (
       <div className="flex min-h-0 flex-1 items-center justify-center p-8">
         <div className="w-full max-w-xl rounded-2xl border border-red-500/[0.12] bg-red-950/10 p-6">
@@ -2514,6 +3343,12 @@ function LayoutTranslationPanel({
         </div>
       </div>
 
+      {status.qa?.quality_gate === "fail" && (
+        <div role="alert" className="shrink-0 border-b border-amber-500/20 bg-amber-500/[0.07] px-4 py-2 text-[11px] leading-5 text-amber-200/90">
+          このPDFは生成済みですが、品質検査は不合格です（Critical {status.qa.critical_count ?? 0}件 / High {status.qa.high_count ?? 0}件）。
+          正式な翻訳完了ではありません。原文と照合し、下部のQA詳細を確認してください。
+        </div>
+      )}
       <div className="relative min-h-0 flex-1 overflow-auto bg-[#0b0e14]">
         {imageSrc && (
           <div className={cn("flex min-h-full min-w-full items-start px-6 py-6 xl:px-9 xl:py-8", zoom <= 1 ? "justify-center" : "justify-start")}>
@@ -2582,18 +3417,20 @@ function QuizPanel({
   submitAnswer,
   goNext,
   goPrevious,
+  onJump,
   isLastQuestion,
   score,
   evaluation,
   attempts,
   onRetry,
-  reportOpen,
-  setReportOpen,
-  reportText,
-  setReportText,
-  reportSent,
-  submitReport,
+  gradingReportStatus,
+  onReportGrading,
+  onOpenGradingReports,
+  gradingElapsedMs,
+  gradingNotice,
   uploadState,
+  quizNotice,
+  onOpenJapanese,
 }: {
   current: QuizItem | null
   currentIndex: number
@@ -2606,24 +3443,31 @@ function QuizPanel({
   submitAnswer: () => void
   goNext: () => void
   goPrevious: () => void
+  onJump: (position: number) => void
   isLastQuestion: boolean
   score: number
   evaluation: Evaluation | null
   attempts: AttemptRecord[]
   onRetry: () => void
-  reportOpen: boolean
-  setReportOpen: (value: boolean) => void
-  reportText: string
-  setReportText: (value: string) => void
-  reportSent: boolean
-  submitReport: () => void
+  gradingReportStatus: "idle" | "saving" | "saved" | "error"
+  onReportGrading: () => void
+  onOpenGradingReports: () => void
+  gradingElapsedMs: number
+  gradingNotice: string
   uploadState: UploadState
+  quizNotice: string
+  onOpenJapanese: () => void
 }) {
   function handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
     if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
       event.preventDefault()
       submitAnswer()
     }
+  }
+
+  function jumpFromInput(value: string) {
+    const next = Number(value)
+    if (Number.isInteger(next) && next >= 1 && next <= total) onJump(next - 1)
   }
 
   return (
@@ -2636,9 +3480,30 @@ function QuizPanel({
           )}>
             {reviewMode ? "Review" : "Question"}
           </span>
-          <span className="font-mono text-[13px] text-zinc-300">
-            {total > 0 ? `${currentIndex + 1} / ${total}` : "0 / 0"}
-          </span>
+          {total > 0 ? (
+            <div className="flex items-center gap-1.5 font-mono text-[13px] text-zinc-300">
+              <input
+                key={`${reviewMode}-${currentIndex}-${total}`}
+                type="number"
+                min={1}
+                max={total}
+                defaultValue={currentIndex + 1}
+                onBlur={(event) => jumpFromInput(event.currentTarget.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault()
+                    jumpFromInput(event.currentTarget.value)
+                    event.currentTarget.blur()
+                  }
+                }}
+                title="問題番号を入力してEnterで直接移動できます"
+                className="h-7 w-12 rounded-md border border-white/[0.07] bg-black/20 px-1.5 text-center font-mono text-[12px] text-zinc-300 outline-none focus:border-indigo-500/35"
+              />
+              <span className="text-zinc-600">/ {total}</span>
+            </div>
+          ) : (
+            <span className="font-mono text-[13px] text-zinc-600">0 / 0</span>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
@@ -2657,6 +3522,7 @@ function QuizPanel({
             size="icon"
             disabled={currentIndex <= 0 || status === "checking"}
             onClick={goPrevious}
+            title="前の問題へ"
             className="h-7 w-7 rounded-md text-zinc-600 transition-all duration-150 hover:bg-white/[0.05] hover:text-zinc-300 disabled:text-zinc-800"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
@@ -2665,8 +3531,9 @@ function QuizPanel({
           <Button
             variant="ghost"
             size="icon"
-            disabled={!evaluation || isLastQuestion || status === "checking"}
+            disabled={isLastQuestion || status === "checking"}
             onClick={goNext}
+            title="未回答でも次の問題へ移動できます"
             className="h-7 w-7 rounded-md text-zinc-600 transition-all duration-150 hover:bg-white/[0.05] hover:text-zinc-300 disabled:text-zinc-800"
           >
             <ChevronRight className="h-3.5 w-3.5" />
@@ -2691,11 +3558,12 @@ function QuizPanel({
                 <BookOpen className="mx-auto h-5 w-5 text-zinc-700" />
               )}
               <p className="mt-4 text-[13px] font-medium text-zinc-400">
-                {uploadState === "uploading" ? "問題を作成しています" : "PDFを読み込むと学習を開始できます"}
+                {uploadState === "uploading" ? "問題を作成しています" : quizNotice ? "この資料のクイズは生成していません" : "PDFを読み込むと学習を開始できます"}
               </p>
               <p className="mt-1.5 text-[11px] leading-relaxed text-zinc-700">
-                英語本文をページ情報付きで抽出し、翻訳問題として順番に出題します
+                {quizNotice || "英語本文をページ情報付きで抽出し、翻訳問題として順番に出題します"}
               </p>
+              {quizNotice && <button type="button" onClick={onOpenJapanese} className="mt-5 rounded-lg bg-indigo-600/80 px-4 py-2 text-xs text-white hover:bg-indigo-500">PDF日本語版・レイアウト翻訳（試験運用）へ</button>}
             </div>
           </div>
         ) : (
@@ -2712,7 +3580,7 @@ function QuizPanel({
                   </span>
                 </div>
 
-                <p className="mt-4 max-w-[980px] text-[19px] leading-[1.7] text-zinc-100">
+                <p className="pt-source-text mt-4 max-w-[980px] text-[19px] leading-[1.7] text-zinc-100">
                   {current.sourceText}
                 </p>
               </div>
@@ -2722,7 +3590,7 @@ function QuizPanel({
               <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-600">
                 AI Reference
               </p>
-              <p className="mt-3 flex gap-2.5 text-[15px] italic leading-[1.72] text-zinc-400">
+              <p className="pt-reference-text mt-3 flex gap-2.5 text-[15px] italic leading-[1.72] text-zinc-400">
                 <Sparkles className="mt-1 h-3 w-3 shrink-0 text-zinc-700" />
                 <span>
                   {evaluation
@@ -2752,7 +3620,7 @@ function QuizPanel({
                   disabled={status !== "idle"}
                   className={cn(
                     "min-h-[176px] resize-none rounded-xl border border-white/[0.08]",
-                    "bg-zinc-900/60 px-5 py-4 text-[18px] leading-[1.7] text-zinc-100",
+                    "pt-answer-text bg-zinc-900/60 px-5 py-4 text-[18px] leading-[1.7] text-zinc-100",
                     "placeholder:text-[17px] placeholder:italic placeholder:text-zinc-600",
                     "transition-all duration-200 hover:border-white/[0.10]",
                     "focus:border-white/[0.15] focus:ring-1 focus:ring-zinc-800 focus:ring-offset-0",
@@ -2768,9 +3636,20 @@ function QuizPanel({
               <div className="flex min-h-8 items-center justify-between">
                 <div>
                   {status === "checking" && (
-                    <div className="flex animate-in items-center gap-2 fade-in duration-200">
-                      <Loader2 className="h-3 w-3 animate-spin text-indigo-400/60" />
-                      <span className="text-[12px] italic text-zinc-600">Scoring…</span>
+                    <div className="w-[360px] max-w-[55vw] animate-in rounded-lg border border-indigo-500/15 bg-indigo-500/[0.04] px-3 py-2.5 fade-in duration-200">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <Loader2 className="h-3.5 w-3.5 animate-spin text-indigo-400/70" />
+                          <span className="text-[12px] text-zinc-400">採点中</span>
+                        </div>
+                        <span className="font-mono text-[11px] text-zinc-500">{(gradingElapsedMs / 1000).toFixed(1)} s</span>
+                      </div>
+                      <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/[0.05]">
+                        <div className="h-full w-2/5 animate-pulse rounded-full bg-indigo-400/55" />
+                      </div>
+                      <p className="mt-2 text-[10px] leading-relaxed text-zinc-600">
+                        同じ英文・同じ回答なら次回は保存済み採点を即時再利用します。
+                      </p>
                     </div>
                   )}
                 </div>
@@ -2789,6 +3668,12 @@ function QuizPanel({
               </div>
             </section>
 
+            {(status === "correct" || status === "partial" || status === "incorrect") && gradingNotice && (
+              <div className="rounded-lg border border-emerald-500/15 bg-emerald-500/[0.04] px-3 py-2 text-[11px] text-emerald-300/75">
+                {gradingNotice}
+              </div>
+            )}
+
             {(status === "correct" || status === "partial" || status === "incorrect") && evaluation && (
               <FeedbackCard
                 type={status}
@@ -2800,20 +3685,295 @@ function QuizPanel({
                 attempts={attempts}
                 onRetry={onRetry}
                 reviewMode={reviewMode}
+                gradingReportStatus={gradingReportStatus}
+                onReportGrading={onReportGrading}
+                onOpenGradingReports={onOpenGradingReports}
               />
             )}
           </div>
         )}
       </div>
 
-      <FooterReport
-        reportOpen={reportOpen}
-        setReportOpen={setReportOpen}
-        reportText={reportText}
-        setReportText={setReportText}
-        reportSent={reportSent}
-        submitReport={submitReport}
-      />
+
+    </section>
+  )
+}
+
+function VocabularyPanel({
+  cards,
+  loading,
+  error,
+  onRefresh,
+  onReview,
+  onBackToStudy,
+  documentId,
+  sourceContext,
+  onManualAdd,
+}: {
+  cards: VocabularyCard[]
+  loading: boolean
+  error: string | null
+  onRefresh: () => void
+  onReview: (cardId: string, direction: VocabularyDirection, known: boolean) => Promise<void>
+  onBackToStudy: () => void
+  documentId: string | null
+  sourceContext: string
+  onManualAdd: (source: string, translation: string, kind: VocabularyKind, context: string) => Promise<void>
+}) {
+  const [paperOnly, setPaperOnly] = React.useState(Boolean(documentId))
+  const [manualOpen, setManualOpen] = React.useState(false)
+  const [manualSource, setManualSource] = React.useState("")
+  const [manualTranslation, setManualTranslation] = React.useState("")
+  const [manualKind, setManualKind] = React.useState<VocabularyKind>("word")
+  const [manualError, setManualError] = React.useState("")
+  const [manualBusy, setManualBusy] = React.useState(false)
+  const [direction, setDirection] = React.useState<VocabularyDirection>("en-ja")
+  const [missedOnly, setMissedOnly] = React.useState(false)
+  const [kindFilter, setKindFilter] = React.useState<VocabularyKindFilter>("all")
+  const [viewMode, setViewMode] = React.useState<"cards" | "list">("cards")
+  const [searchText, setSearchText] = React.useState("")
+  const [duplicatesOnly, setDuplicatesOnly] = React.useState(false)
+  const [index, setIndex] = React.useState(0)
+  const [revealed, setRevealed] = React.useState(false)
+  const [saving, setSaving] = React.useState(false)
+
+  const baseFiltered = React.useMemo(() => {
+    return cards.filter((card) => {
+      if (paperOnly && documentId && !card.documentIds.includes(documentId)) return false
+      if (kindFilter !== "all" && card.kind !== kindFilter) return false
+      if (!missedOnly) return true
+      return direction === "en-ja" ? card.wrongEnJa > card.correctEnJa : card.wrongJaEn > card.correctJaEn
+    })
+  }, [cards, direction, missedOnly, kindFilter, paperOnly, documentId])
+
+  const listFiltered = React.useMemo(() => {
+    const query = searchText.trim().toLocaleLowerCase()
+    return baseFiltered.filter((card) => {
+      if (duplicatesOnly && card.duplicateStatus === "none") return false
+      if (!query) return true
+      const haystack = [card.source, card.translation, ...card.surfaceForms, ...card.contexts].join("\n").toLocaleLowerCase()
+      return haystack.includes(query)
+    })
+  }, [baseFiltered, searchText, duplicatesOnly])
+
+  React.useEffect(() => {
+    setIndex(0)
+    setRevealed(false)
+  }, [direction, missedOnly, kindFilter, paperOnly, documentId, cards.length])
+
+  const card = baseFiltered[index] ?? null
+  const front = card ? (direction === "en-ja" ? card.source : card.translation) : ""
+  const back = card ? (direction === "en-ja" ? card.translation : card.source) : ""
+  const knownCount = cards.reduce((sum, item) => sum + item.correctEnJa + item.correctJaEn, 0)
+  const missedCount = cards.reduce((sum, item) => sum + item.wrongEnJa + item.wrongJaEn, 0)
+  const duplicateCount = cards.filter((item) => item.duplicateStatus !== "none").length
+  const kindLabels: Record<VocabularyKind, string> = {
+    term: "専門用語",
+    word: "一般単語",
+    phrase: "フレーズ",
+    pattern: "構文",
+  }
+  const latestContext = card ? (card.contexts[card.contexts.length - 1] ?? "") : ""
+  const latestSurface = card ? (card.surfaceForms[card.surfaceForms.length - 1] ?? "") : ""
+
+  async function record(known: boolean) {
+    if (!card || saving) return
+    setSaving(true)
+    try {
+      await onReview(card.cardId, direction, known)
+      setRevealed(false)
+      setIndex((value) => baseFiltered.length > 1 ? (value + 1) % baseFiltered.length : 0)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <section className="flex h-full min-w-0 flex-col bg-zinc-950">
+      <div className="flex h-16 shrink-0 items-center justify-between border-b border-white/[0.06] bg-zinc-900/30 px-5">
+        <div>
+          <p className="text-[12px] font-medium uppercase tracking-[0.18em] text-zinc-500">Vocabulary</p>
+          <p className="mt-1 text-[11px] text-zinc-600">原文から安全に抽出した単語・専門用語・フレーズ・構文</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setViewMode("cards")} className={cn("rounded-md border px-3 py-1.5 text-[11px]", viewMode === "cards" ? "border-indigo-500/25 bg-indigo-500/10 text-indigo-300" : "border-white/[0.06] text-zinc-500")}>カード</button>
+          <button onClick={() => setViewMode("list")} className={cn("rounded-md border px-3 py-1.5 text-[11px]", viewMode === "list" ? "border-indigo-500/25 bg-indigo-500/10 text-indigo-300" : "border-white/[0.06] text-zinc-500")}>一覧</button>
+          <button onClick={() => setDirection("en-ja")} className={cn("rounded-md border px-3 py-1.5 text-[11px]", direction === "en-ja" ? "border-indigo-500/25 bg-indigo-500/10 text-indigo-300" : "border-white/[0.06] text-zinc-500")}>英 → 日</button>
+          <button onClick={() => setDirection("ja-en")} className={cn("rounded-md border px-3 py-1.5 text-[11px]", direction === "ja-en" ? "border-indigo-500/25 bg-indigo-500/10 text-indigo-300" : "border-white/[0.06] text-zinc-500")}>日 → 英</button>
+          <button onClick={() => setMissedOnly((value) => !value)} className={cn("rounded-md border px-3 py-1.5 text-[11px]", missedOnly ? "border-amber-500/25 bg-amber-500/10 text-amber-300" : "border-white/[0.06] text-zinc-500")}>苦手だけ</button>
+          <button onClick={onRefresh} className="rounded-md border border-white/[0.06] px-3 py-1.5 text-[11px] text-zinc-500 hover:text-zinc-200">更新</button>
+          <button onClick={onBackToStudy} className="rounded-md px-3 py-1.5 text-[11px] text-zinc-500 hover:text-zinc-200">学習へ戻る</button>
+        </div>
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto px-8 py-8">
+        <div className="mx-auto max-w-5xl">
+          <div className="grid grid-cols-4 gap-3">
+            <div className="rounded-lg border border-white/[0.06] bg-zinc-900/35 px-4 py-3"><p className="text-[10px] text-zinc-600">カード</p><p className="mt-1 font-mono text-lg text-zinc-300">{cards.length}</p></div>
+            <div className="rounded-lg border border-white/[0.06] bg-zinc-900/35 px-4 py-3"><p className="text-[10px] text-zinc-600">✓ 回数</p><p className="mt-1 font-mono text-lg text-emerald-300/80">{knownCount}</p></div>
+            <div className="rounded-lg border border-white/[0.06] bg-zinc-900/35 px-4 py-3"><p className="text-[10px] text-zinc-600">× 回数</p><p className="mt-1 font-mono text-lg text-amber-300/80">{missedCount}</p></div>
+            <div className="rounded-lg border border-white/[0.06] bg-zinc-900/35 px-4 py-3"><p className="text-[10px] text-zinc-600">重複候補</p><p className={cn("mt-1 font-mono text-lg", duplicateCount ? "text-amber-300/80" : "text-zinc-500")}>{duplicateCount}</p></div>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-2">
+            {([
+              ["all", "すべて"],
+              ["term", "専門用語"],
+              ["word", "一般単語"],
+              ["phrase", "フレーズ"],
+              ["pattern", "構文"],
+            ] as [VocabularyKindFilter, string][]).map(([value, label]) => (
+              <button
+                key={value}
+                onClick={() => setKindFilter(value)}
+                className={cn(
+                  "rounded-md border px-3 py-1.5 text-[11px] transition-colors",
+                  kindFilter === value
+                    ? "border-indigo-500/25 bg-indigo-500/10 text-indigo-300"
+                    : "border-white/[0.06] text-zinc-500 hover:text-zinc-200"
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-3 text-xs">
+            <button disabled={!documentId} onClick={() => setPaperOnly((v) => !v)} className={cn("rounded-lg border px-3 py-2", paperOnly ? "border-indigo-400/30 bg-indigo-500/10 text-indigo-200" : "border-white/10 text-zinc-400", !documentId && "opacity-40")}>{paperOnly ? "✓ この論文のみ" : "この論文のみ表示"}</button>
+            <button onClick={() => setManualOpen((v) => !v)} className="rounded-lg border border-white/10 px-3 py-2 text-zinc-300 hover:text-white">＋ 語彙を手動追加</button>
+            <span className="text-zinc-600">自動登録は辞書・定型パターンに一致した語だけです</span>
+          </div>
+          {manualOpen && (
+            <form className="mt-3 grid gap-2 rounded-xl border border-indigo-500/15 bg-zinc-900/50 p-4" onSubmit={async (event) => {
+              event.preventDefault()
+              if (!manualSource.trim() || !manualTranslation.trim()) return
+              setManualBusy(true); setManualError("")
+              try {
+                await onManualAdd(manualSource.trim(), manualTranslation.trim(), manualKind, sourceContext)
+                setManualSource(""); setManualTranslation(""); setManualOpen(false)
+              } catch (error) { setManualError(error instanceof Error ? error.message : "登録エラー") }
+              finally { setManualBusy(false) }
+            }}>
+              <p className="text-sm text-zinc-200">単語・フレーズを登録（現在の論文と紐付け）</p>
+              <input required maxLength={240} value={manualSource} onChange={(e) => setManualSource(e.target.value)} placeholder="English" className="rounded-md border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
+              <input required maxLength={240} value={manualTranslation} onChange={(e) => setManualTranslation(e.target.value)} placeholder="日本語訳（文脈に合う意味）" className="rounded-md border border-white/10 bg-zinc-950 px-3 py-2 text-sm text-zinc-100" />
+              <div className="flex items-center gap-2"><select value={manualKind} onChange={(e) => setManualKind(e.target.value as VocabularyKind)} className="rounded-md border border-white/10 bg-zinc-950 px-2 py-2 text-xs text-zinc-200"><option value="word">単語</option><option value="term">専門用語</option><option value="phrase">フレーズ</option><option value="pattern">構文</option></select><button type="submit" disabled={manualBusy} className="rounded-md bg-indigo-600 px-3 py-2 text-xs text-white disabled:opacity-40">保存</button></div>
+              {manualError && <p className="text-xs text-red-300">{manualError}</p>}
+            </form>
+          )}
+          {loading ? (
+            <div className="mt-20 flex justify-center"><Loader2 className="h-5 w-5 animate-spin text-indigo-400/60" /></div>
+          ) : error ? (
+            <div className="mt-12 rounded-lg border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-300/80">{error}</div>
+          ) : viewMode === "list" ? (
+            <div className="mt-6">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="relative min-w-[260px] flex-1">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-600" />
+                  <input
+                    value={searchText}
+                    onChange={(event) => setSearchText(event.target.value)}
+                    placeholder="英語・日本語・本文形・Contextを検索"
+                    className="h-10 w-full rounded-lg border border-white/[0.07] bg-zinc-900/40 pl-12 pr-3 text-sm text-zinc-300 outline-none placeholder:text-zinc-700 focus:border-indigo-500/30"
+                  />
+                </div>
+                <button
+                  onClick={() => setDuplicatesOnly((value) => !value)}
+                  className={cn("h-10 rounded-lg border px-4 text-[11px]", duplicatesOnly ? "border-amber-500/25 bg-amber-500/10 text-amber-300" : "border-white/[0.07] text-zinc-500")}
+                >
+                  重複候補だけ
+                </button>
+                <span className="text-[11px] text-zinc-600">{listFiltered.length} / {cards.length} 件</span>
+              </div>
+
+              <div className="mt-4 overflow-hidden rounded-xl border border-white/[0.06]">
+                <div className="grid grid-cols-[minmax(150px,1.1fr)_minmax(180px,1.4fr)_90px_70px_70px_90px] gap-3 border-b border-white/[0.06] bg-zinc-900/55 px-4 py-2 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+                  <span>English</span><span>日本語</span><span>種類</span><span>出現</span><span>論文</span><span>履歴</span>
+                </div>
+                {listFiltered.length === 0 ? (
+                  <div className="px-4 py-12 text-center text-sm text-zinc-600">条件に一致するカードはありません。</div>
+                ) : (
+                  <div className="divide-y divide-white/[0.045]">
+                    {listFiltered.map((item) => {
+                      const correct = item.correctEnJa + item.correctJaEn
+                      const wrong = item.wrongEnJa + item.wrongJaEn
+                      return (
+                        <div key={item.cardId} className="grid grid-cols-[minmax(150px,1.1fr)_minmax(180px,1.4fr)_90px_70px_70px_90px] gap-3 px-4 py-3 text-xs text-zinc-400 hover:bg-white/[0.02]">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="truncate font-medium text-zinc-200">{item.source}</span>
+                              {item.duplicateStatus !== "none" && (
+                                <span className={cn("shrink-0 rounded border px-1.5 py-0.5 text-[9px]", item.duplicateStatus === "conflict" ? "border-red-500/25 bg-red-500/10 text-red-300" : "border-amber-500/25 bg-amber-500/10 text-amber-300")}>
+                                  {item.duplicateStatus === "conflict" ? "訳違い" : "表記重複"}
+                                </span>
+                              )}
+                            </div>
+                            {item.surfaceForms.length > 0 && <p className="mt-1 truncate text-[10px] text-zinc-650">本文形: {item.surfaceForms.join(" / ")}</p>}
+                          </div>
+                          <span className="min-w-0 break-words text-zinc-300">{item.translation}</span>
+                          <span className="text-zinc-500">{kindLabels[item.kind]}</span>
+                          <span className="font-mono text-zinc-500">{item.seenCount}</span>
+                          <span className="font-mono text-zinc-500">{item.documentIds.length}</span>
+                          <span className="font-mono"><span className="text-emerald-400/70">✓{correct}</span> <span className="text-amber-400/70">×{wrong}</span></span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+              <p className="mt-3 text-[10px] leading-relaxed text-zinc-650">完全一致は保存時に自動統合します。「表記重複」は大文字小文字・ハイフン・単複などを正規化すると同じ語になる候補、「訳違い」は同じ英語候補に別の日本語が保存されている候補です。</p>
+            </div>
+          ) : !card ? (
+            <div className="mt-20 text-center">
+              <BookOpen className="mx-auto h-6 w-6 text-zinc-700" />
+              <p className="mt-4 text-sm text-zinc-400">{missedOnly ? "苦手カードはありません" : "単語カードはまだありません"}</p>
+              <p className="mt-2 text-xs text-zinc-600">クイズを採点すると、原文に出た安全な語彙・フレーズ・構文が自動で追加されます。</p>
+            </div>
+          ) : (
+            <div className="mx-auto mt-8 max-w-3xl">
+              <div className="mb-3 flex items-center justify-between text-[11px] text-zinc-600">
+                <span>{index + 1} / {baseFiltered.length}</span>
+                <span>{direction === "en-ja" ? "English → 日本語" : "日本語 → English"}</span>
+              </div>
+              <button
+                onClick={() => setRevealed(true)}
+                className="flex min-h-[300px] w-full flex-col items-center justify-center rounded-2xl border border-white/[0.08] bg-zinc-900/50 px-10 py-12 text-center transition-colors hover:border-indigo-500/20"
+              >
+                <div className="flex items-center gap-2">
+                  <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-600">{revealed ? "Answer" : "Card"}</p>
+                  <span className="rounded-full border border-white/[0.07] bg-white/[0.025] px-2 py-0.5 text-[10px] text-zinc-500">
+                    {kindLabels[card.kind]}
+                  </span>
+                </div>
+                <p className="mt-6 text-2xl leading-relaxed text-zinc-100">{front}</p>
+                {!revealed && latestSurface && latestSurface.toLocaleLowerCase() !== card.source.toLocaleLowerCase() && (
+                  <p className="mt-3 text-[11px] text-zinc-600">本文形: {latestSurface}</p>
+                )}
+                {revealed ? (
+                  <div className="mt-8 w-full border-t border-white/[0.06] pt-8">
+                    <p className="text-xl leading-relaxed text-indigo-200">{back}</p>
+                    {latestContext && (
+                      <div className="mt-8 rounded-lg border border-white/[0.05] bg-black/15 px-4 py-3 text-left">
+                        <p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">Context</p>
+                        <p className="mt-2 text-xs leading-relaxed text-zinc-500">{latestContext}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mt-8 text-xs text-zinc-600">クリックして答えを見る</p>
+                )}
+              </button>
+
+              {revealed && (
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <Button disabled={saving} onClick={() => void record(false)} variant="ghost" className="h-12 border border-amber-500/20 bg-amber-500/[0.05] text-amber-300 hover:bg-amber-500/10">× もう一度</Button>
+                  <Button disabled={saving} onClick={() => void record(true)} className="h-12 bg-emerald-600 text-white hover:bg-emerald-500">✓ 覚えた</Button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </section>
   )
 }
@@ -2828,6 +3988,9 @@ function FeedbackCard({
   attempts,
   onRetry,
   reviewMode,
+  gradingReportStatus,
+  onReportGrading,
+  onOpenGradingReports,
 }: {
   type: "correct" | "partial" | "incorrect"
   evaluation: Evaluation
@@ -2838,6 +4001,9 @@ function FeedbackCard({
   attempts: AttemptRecord[]
   onRetry: () => void
   reviewMode: boolean
+  gradingReportStatus: "idle" | "saving" | "saved" | "error"
+  onReportGrading: () => void
+  onOpenGradingReports: () => void
 }) {
   const [detailsOpen, setDetailsOpen] = React.useState(false)
   const isCorrect = type === "correct"
@@ -2891,6 +4057,24 @@ function FeedbackCard({
     evaluation.issues.length === 0 &&
     (evaluation.meaningErrors.length > 0 || evaluation.missingInformation.length > 0)
   const canExpand = evaluation.issues.length > 4
+  const semanticUnits = evaluation.semanticUnits ?? []
+  const [showAllUnits, setShowAllUnits] = React.useState(false)
+  const hiddenCorrectUnits = semanticUnits.filter((unit) => unit.status === "correct").length
+  const shownUnits = showAllUnits ? semanticUnits : semanticUnits.filter((unit) => unit.status !== "correct")
+  const breakdown = evaluation.scoreBreakdown ?? null
+  const japaneseQuality = evaluation.japaneseQuality ?? null
+  const externalAudit = evaluation.externalAudit ?? null
+  const unitStatusLabel: Record<SemanticUnitStatus, string> = {
+    correct: "保持",
+    partial: "一部",
+    missing: "欠落",
+    wrong: "誤り",
+  }
+  const importanceLabel: Record<SemanticImportance, string> = {
+    core: "主要",
+    support: "補足",
+    detail: "詳細",
+  }
 
   return (
     <section
@@ -2935,7 +4119,7 @@ function FeedbackCard({
             )}
           </div>
 
-          <p className="mt-3 max-w-[760px] whitespace-pre-wrap text-[16px] leading-[1.72] text-zinc-300">
+          <p className="pt-feedback-text mt-3 max-w-[760px] whitespace-pre-wrap text-[16px] leading-[1.72] text-zinc-300">
             {evaluation.feedback}
           </p>
 
@@ -2992,10 +4176,160 @@ function FeedbackCard({
       </div>
 
       <div className="space-y-4 px-4 py-4">
+        {externalAudit && (
+          <div
+            className={cn(
+              "rounded-xl border px-3.5 py-3",
+              externalAudit.status === "verified" && "border-emerald-500/[0.13] bg-emerald-500/[0.045]",
+              externalAudit.status === "minor_difference" && "border-indigo-500/[0.14] bg-indigo-500/[0.045]",
+              externalAudit.status === "disagreement" && "border-amber-500/[0.16] bg-amber-500/[0.05]",
+              ["local_only", "quota_exhausted", "unavailable"].includes(externalAudit.status) && "border-white/[0.06] bg-white/[0.02]"
+            )}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                {externalAudit.status === "verified" ? (
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400/80" />
+                ) : externalAudit.status === "disagreement" ? (
+                  <AlertTriangle className="h-3.5 w-3.5 text-amber-400/80" />
+                ) : (
+                  <ShieldCheck className="h-3.5 w-3.5 text-indigo-300/70" />
+                )}
+                <span className="text-[12px] font-medium text-zinc-300">
+                  {externalAudit.status === "verified"
+                    ? "独立監査済み · Azure"
+                    : externalAudit.status === "minor_difference"
+                      ? "独立監査 · 表現差のみ"
+                      : externalAudit.status === "disagreement"
+                        ? "独立監査で意味差あり"
+                        : externalAudit.status === "quota_exhausted"
+                          ? "Azure無料枠ソフト上限 → ローカル監査"
+                          : externalAudit.status === "unavailable"
+                            ? "Azure一時利用不可 → ローカル監査"
+                            : "ローカル監査"}
+                </span>
+              </div>
+              {externalAudit.monthlySoftLimit > 0 && externalAudit.provider === "azure" && (
+                <span className="font-mono text-[10px] text-zinc-600">
+                  {externalAudit.monthUsage.toLocaleString()} / {externalAudit.monthlySoftLimit.toLocaleString()} chars
+                </span>
+              )}
+            </div>
+            {externalAudit.message && (
+              <p className="mt-2 text-[11px] leading-[1.65] text-zinc-500">{externalAudit.message}</p>
+            )}
+            {externalAudit.status === "disagreement" && (
+              <div className="mt-2 space-y-2">
+                <p className="text-[11px] leading-[1.65] text-amber-200/65">
+                  この差異だけで減点は追加していません。現在の採点はローカル基準を継続し、改善ログ対象として扱えます。
+                </p>
+                {externalAudit.translation && (
+                  <div className="rounded-lg border border-amber-500/[0.10] bg-black/10 px-3 py-2.5">
+                    <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-600">Independent MT</p>
+                    <p className="mt-1.5 text-[12px] leading-[1.65] text-zinc-400">{externalAudit.translation}</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {breakdown && (
+          <div className="rounded-xl border border-white/[0.055] bg-black/10 px-3.5 py-3.5">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[13px] font-medium text-zinc-400">採点内訳</p>
+              <span className="font-mono text-[11px] text-zinc-600">意味を70点、用語15点、日本語15点で評価</span>
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              {[
+                ["意味・情報", breakdown.meaning, 70],
+                ["専門用語", breakdown.terminology, 15],
+                ["日本語", breakdown.japanese, 15],
+              ].map(([label, value, max]) => (
+                <div key={String(label)} className="rounded-lg border border-white/[0.05] bg-white/[0.018] px-3 py-2.5">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="text-[11px] text-zinc-500">{label}</span>
+                    <span className="font-mono text-[13px] text-zinc-300">{value}/{max}</span>
+                  </div>
+                  <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/[0.05]">
+                    <div
+                      className="h-full rounded-full bg-indigo-400/70"
+                      style={{ width: `${Math.max(0, Math.min(100, (Number(value) / Number(max)) * 100))}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            {japaneseQuality?.note && japaneseQuality.level !== "natural" && (
+              <div className="mt-3 rounded-lg border border-white/[0.05] bg-white/[0.018] px-3 py-2.5">
+                <p className="text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-600">日本語品質 · {japaneseQuality.level}</p>
+                <p className="pt-feedback-text mt-1.5 text-[12px] leading-[1.65] text-zinc-400">{japaneseQuality.note}</p>
+              </div>
+            )}
+            {breakdown.capReason && (
+              <div className="mt-3 flex items-start gap-2 rounded-lg border border-amber-500/[0.12] bg-amber-500/[0.045] px-3 py-2.5">
+                <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400/80" />
+                <p className="text-[12px] leading-[1.65] text-amber-200/70">
+                  素点 {breakdown.rawTotal} 点 → {breakdown.total} 点。{breakdown.capReason}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {semanticUnits.length > 0 && (
+          <div className="border-t border-white/[0.05] pt-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[13px] font-medium text-zinc-400">意味単位ごとの答え合わせ</p>
+                <p className="mt-1 text-[11px] text-zinc-600">模範訳の表面形ではなく、原文の情報が保持できたかを判定します</p>
+              </div>
+              <span className="font-mono text-[11px] text-zinc-600">{semanticUnits.reduce((sum, unit) => sum + unit.earnedPoints, 0)}/70</span>
+            </div>
+            {hiddenCorrectUnits > 0 && <button type="button" onClick={() => setShowAllUnits((v) => !v)} className="mt-3 rounded-md border border-white/10 px-3 py-2 text-xs text-zinc-400 hover:text-white">{showAllUnits ? "保持した項目を折りたたむ" : `保持済み ${hiddenCorrectUnits} 件を表示（詳細）`}</button>}
+            {shownUnits.length === 0 && <p className="mt-3 text-xs text-emerald-300/70">主要な情報は保持されています。必要なら詳細を展開してください。</p>}
+            <div className="mt-3 grid gap-2">
+              {shownUnits.map((unit) => (
+                <div
+                  key={unit.id}
+                  className={cn(
+                    "rounded-lg border px-3.5 py-3",
+                    unit.status === "correct" && "border-emerald-500/[0.13] bg-emerald-500/[0.045]",
+                    unit.status === "partial" && "border-amber-500/[0.15] bg-amber-500/[0.045]",
+                    (unit.status === "missing" || unit.status === "wrong") && "border-red-500/[0.14] bg-red-500/[0.045]"
+                  )}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2">
+                      <span className={cn(
+                        "rounded-md border px-2 py-0.5 text-[10px] font-medium",
+                        unit.status === "correct" && "border-emerald-500/[0.16] text-emerald-300/80",
+                        unit.status === "partial" && "border-amber-500/[0.16] text-amber-300/80",
+                        (unit.status === "missing" || unit.status === "wrong") && "border-red-500/[0.16] text-red-300/80"
+                      )}>
+                        {unitStatusLabel[unit.status]}
+                      </span>
+                      <span className="rounded-md border border-white/[0.06] px-2 py-0.5 text-[10px] text-zinc-600">
+                        {importanceLabel[unit.importance]}
+                      </span>
+                    </div>
+                    <span className="font-mono text-[11px] text-zinc-500">{unit.earnedPoints}/{unit.maxPoints}</span>
+                  </div>
+                  <p className="pt-feedback-text mt-2.5 font-mono text-[12px] leading-[1.65] text-zinc-400">{unit.source}</p>
+                  <p className="pt-feedback-text mt-1.5 text-[13px] leading-[1.65] text-zinc-300">→ {unit.translation}</p>
+                  {unit.note && (
+                    <p className="pt-feedback-text mt-2 text-[12px] leading-[1.65] text-zinc-500">{unit.note}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {(evaluation.issues.length > 0 || hasLegacyDetails) && (
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <p className="mr-1 text-[13px] font-medium text-zinc-400">学習ポイント</p>
+              <p className="mr-1 text-[13px] font-medium text-zinc-400">補足フィードバック</p>
 
               {(Object.keys(issueCounts) as IssueCategory[])
                 .filter((category) => issueCounts[category] > 0)
@@ -3048,12 +4382,12 @@ function FeedbackCard({
                       )}
                     </div>
 
-                    <p className="mt-2 text-[14px] leading-[1.7] text-zinc-300">
+                    <p className="pt-feedback-text mt-2 text-[14px] leading-[1.7] text-zinc-300">
                       {issue.message}
                     </p>
 
                     {issue.suggestion && (
-                      <p className="mt-1.5 text-[13px] leading-[1.65] text-zinc-500">
+                      <p className="pt-feedback-text mt-1.5 text-[13px] leading-[1.65] text-zinc-500">
                         修正案: {issue.suggestion}
                       </p>
                     )}
@@ -3065,13 +4399,13 @@ function FeedbackCard({
             {hasLegacyDetails && (
               <div className="mt-3 space-y-2 rounded-lg border border-white/[0.055] bg-black/10 px-3.5 py-3">
                 {evaluation.missingInformation.map((item, index) => (
-                  <p key={`missing-${index}`} className="text-[14px] leading-[1.7] text-zinc-300">
+                  <p key={`missing-${index}`} className="pt-feedback-text text-[14px] leading-[1.7] text-zinc-300">
                     <span className="mr-2 text-red-400">未訳・脱落</span>
                     {item}
                   </p>
                 ))}
                 {evaluation.meaningErrors.map((item, index) => (
-                  <p key={`meaning-${index}`} className="text-[14px] leading-[1.7] text-zinc-300">
+                  <p key={`meaning-${index}`} className="pt-feedback-text text-[14px] leading-[1.7] text-zinc-300">
                     <span className="mr-2 text-red-400">誤訳</span>
                     {item}
                   </p>
@@ -3108,7 +4442,7 @@ function FeedbackCard({
             </div>
 
             {evaluation.syntaxInsight.summary && (
-              <p className="mt-2 text-[14px] leading-[1.7] text-zinc-400">
+              <p className="pt-feedback-text mt-2 text-[14px] leading-[1.7] text-zinc-400">
                 {evaluation.syntaxInsight.summary}
               </p>
             )}
@@ -3131,7 +4465,7 @@ function FeedbackCard({
                     </span>
                   </div>
                   {relation.explanation && (
-                    <p className="mt-2 text-[12px] leading-[1.65] text-zinc-500">
+                    <p className="pt-feedback-text mt-2 text-[12px] leading-[1.65] text-zinc-500">
                       {relation.explanation}
                     </p>
                   )}
@@ -3145,12 +4479,23 @@ function FeedbackCard({
           <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-600">
             Model Answer
           </p>
-          <p className="mt-3 text-[16px] leading-[1.72] text-zinc-300">
+          {evaluation.referenceReview?.status === "editorially_reviewed" && (
+            <p className="mt-2 text-[11px] text-zinc-500">原文照合済みの表示用校閲訳（採点用の固定ルーブリックとは独立）</p>
+          )}
+          {evaluation.referenceReview?.status === "needs_review" && (
+            <div className="mt-2 rounded-md border border-amber-500/20 bg-amber-500/5 px-3 py-2 text-[12px] text-amber-300">
+              模範訳は要確認です。正解例としてそのまま暗記しないでください。
+              {(evaluation.referenceReview.flags ?? []).map((flag, index) => (
+                <p key={index} className="mt-1">{flag}</p>
+              ))}
+            </div>
+          )}
+          <p className="pt-reference-text mt-3 text-[16px] leading-[1.72] text-zinc-300">
             {evaluation.referenceTranslation}
           </p>
         </div>
 
-        {evaluation.keyPoints.length > 0 && (
+        {semanticUnits.length === 0 && evaluation.keyPoints.length > 0 && (
           <div className="border-t border-white/[0.05] pt-4">
             <p className="text-[13px] font-medium text-zinc-400">キーポイント</p>
             <p className="mt-1 text-[11px] text-zinc-600">
@@ -3182,8 +4527,8 @@ function FeedbackCard({
                   )}
 
                   <div className="min-w-0">
-                    <p className="text-[13px] leading-[1.6] text-zinc-300">{point.source}</p>
-                    <p className="mt-1.5 text-[13px] leading-[1.6] text-zinc-500">
+                    <p className="pt-feedback-text text-[13px] leading-[1.6] text-zinc-300">{point.source}</p>
+                    <p className="pt-feedback-text mt-1.5 text-[13px] leading-[1.6] text-zinc-500">
                       → {point.translation || "日本語対応は再採点で更新されます"}
                     </p>
                   </div>
@@ -3194,15 +4539,38 @@ function FeedbackCard({
         )}
 
         <div className="flex min-h-10 items-center justify-between border-t border-white/[0.05] pt-3">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onRetry}
-            className="h-9 rounded-lg border border-white/[0.06] bg-white/[0.025] px-3.5 text-[12px] text-zinc-400 transition-all duration-150 hover:bg-white/[0.05] hover:text-zinc-200"
-          >
-            <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-            訳文を修正して再採点
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onRetry}
+              className="h-9 rounded-lg border border-white/[0.06] bg-white/[0.025] px-3.5 text-[12px] text-zinc-400 transition-all duration-150 hover:bg-white/[0.05] hover:text-zinc-200"
+            >
+              <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+              訳文を修正して再採点
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={gradingReportStatus === "saving" || gradingReportStatus === "saved"}
+              onClick={onReportGrading}
+              className="h-9 rounded-lg border border-red-500/[0.10] bg-red-500/[0.025] px-3 text-[12px] text-red-300/70 hover:bg-red-500/[0.06] hover:text-red-200 disabled:opacity-60"
+            >
+              <AlertTriangle className="mr-1.5 h-3.5 w-3.5" />
+              {gradingReportStatus === "saving" ? "保存中…" : gradingReportStatus === "saved" ? "改善ログに保存済み" : gradingReportStatus === "error" ? "保存失敗・再試行" : "採点がおかしい"}
+            </Button>
+            {gradingReportStatus === "saved" && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onOpenGradingReports}
+                className="h-9 rounded-lg px-2.5 text-[12px] text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"
+              >
+                <FolderOpen className="mr-1.5 h-3.5 w-3.5" />
+                改善ログを開く
+              </Button>
+            )}
+          </div>
 
           {isLastQuestion ? (
             <div className="flex animate-in items-center gap-2 fade-in duration-300">
@@ -3240,100 +4608,141 @@ function FeedbackCard({
   )
 }
 
-function FooterReport({
-  reportOpen,
-  setReportOpen,
-  reportText,
-  setReportText,
-  reportSent,
-  submitReport,
+function LibraryPanel({
+  items,
+  loading,
+  error,
+  onClose,
+  onRefresh,
+  onOpen,
+  onSaveNotes,
+  onExportOffline,
+  onOpenGraph,
 }: {
-  reportOpen: boolean
-  setReportOpen: (value: boolean) => void
-  reportText: string
-  setReportText: (value: string) => void
-  reportSent: boolean
-  submitReport: () => void
+  items: LibraryItem[]
+  loading: boolean
+  error: string | null
+  onClose: () => void
+  onRefresh: () => void
+  onOpen: (documentId: string) => void
+  onSaveNotes: (documentId: string, notes: string) => Promise<void>
+  onExportOffline: (documentId: string) => Promise<void>
+  onOpenGraph: (documentId: string | null) => void
 }) {
+  const [query, setQuery] = React.useState("")
+  const [searchScope, setSearchScope] = React.useState<"all" | "notes" | "bibliography">("all")
+  const [sortMode, setSortMode] = React.useState<"recent" | "title" | "noted">("recent")
+  const [selectedId, setSelectedId] = React.useState<string | null>(null)
+  const [editingId, setEditingId] = React.useState<string | null>(null)
+  const [draftNote, setDraftNote] = React.useState("")
+  const [savingNote, setSavingNote] = React.useState(false)
+  const [noteError, setNoteError] = React.useState("")
+  const [previewError, setPreviewError] = React.useState(false)
+  const [exportingOfflineId, setExportingOfflineId] = React.useState<string | null>(null)
+  const [offlineExportError, setOfflineExportError] = React.useState("")
+  const [offlineExportNotice, setOfflineExportNotice] = React.useState("")
+  async function saveOfflineZip(targetDocumentId: string) {
+    setExportingOfflineId(targetDocumentId)
+    setOfflineExportError("")
+    setOfflineExportNotice("")
+    try {
+      await onExportOffline(targetDocumentId)
+      setOfflineExportNotice("オフライン持ち出しZIPを保存しました。スマホへコピーして展開してください。")
+    } catch (error) {
+      setOfflineExportError(error instanceof Error ? error.message : "持ち出しZIPの作成に失敗しました")
+    } finally {
+      setExportingOfflineId(null)
+    }
+  }
+  const filtered = React.useMemo(() => {
+    const tokens = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean)
+    return items.filter((item) => {
+      const metadata = [item.title, item.doi ?? "", ...(item.filenames ?? [])].join("\n")
+      const notes = item.notes ?? ""
+      if (searchScope === "notes" && !notes.trim()) return false
+      const haystack = (searchScope === "notes" ? notes : searchScope === "bibliography" ? metadata : `${metadata}\n${notes}`).toLocaleLowerCase()
+      return tokens.every((token) => haystack.includes(token))
+    }).sort((a, b) => {
+      if (sortMode === "noted") {
+        const noteDelta = Number(Boolean(b.notes?.trim())) - Number(Boolean(a.notes?.trim()))
+        if (noteDelta) return noteDelta
+      }
+      if (sortMode === "title") return a.title.localeCompare(b.title, "ja")
+      return (Date.parse(b.last_opened_at || b.added_at) || 0) - (Date.parse(a.last_opened_at || a.added_at) || 0)
+    })
+  }, [items, query, searchScope, sortMode])
+  const selected = filtered.find((item) => item.document_id === selectedId) ?? filtered[0] ?? null
+  React.useEffect(() => { setPreviewError(false) }, [selected?.document_id])
+  function quizProgress(documentId: string) {
+    const session = readSavedSession(documentId)
+    if (!session) return 0
+    return Object.values(session.records).filter((record) => (record.attempts?.length ?? 0) > 0).length
+  }
+  function visibleTitle(item: LibraryItem) {
+    return /^[a-f0-9]{10,64}$/i.test(item.title) ? (item.filenames[item.filenames.length - 1] || item.title) : item.title
+  }
+
   return (
-    <footer className="flex shrink-0 items-center justify-between border-t border-white/[0.05] bg-zinc-900/20 px-4 py-2.5">
-      {!reportOpen && !reportSent && (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setReportOpen(true)}
-          className="group -ml-1 h-8 rounded-md px-2 text-[12px] text-zinc-700 transition-all duration-150 hover:bg-transparent hover:text-zinc-500"
-        >
-          <AlertTriangle className="mr-1.5 h-3 w-3 text-zinc-700 transition-colors duration-200 group-hover:text-amber-500/60" />
-          AIに翻訳ミスを報告する
-        </Button>
-      )}
-
-      {reportSent && (
-        <div className="flex animate-in items-center gap-1.5 fade-in duration-200">
-          <CheckCircle2 className="h-3 w-3 text-emerald-400/60" />
-          <span className="text-[12px] text-zinc-500">
-            Reported — thank you
-          </span>
+    <div className="fixed inset-0 z-50 flex bg-black/70 backdrop-blur-sm" role="presentation">
+      <section role="dialog" aria-modal="true" aria-label="Library 論文と研究メモ" className="pt-library-dialog m-auto flex h-[94vh] w-[96vw] max-w-[1500px] flex-col overflow-hidden rounded-2xl border border-white/[0.10] bg-zinc-950 shadow-2xl">
+        <div className="flex min-h-[72px] shrink-0 items-center justify-between border-b border-white/[0.07] px-5">
+          <div><h2 className="flex items-center gap-2 text-lg font-semibold text-zinc-100"><BookOpen className="h-5 w-5 text-indigo-400" />Library <span className="text-xs font-normal text-zinc-500">{items.length} 資料</span></h2>
+            <p className="mt-1 text-xs text-zinc-500">左側で選択 → 右側で大きく確認してから開く。メモはローカル保存。</p>
+          </div>
+          <div className="flex items-center gap-2"><Button variant="ghost" size="sm" onClick={() => onOpenGraph(selected?.document_id ?? null)} className="h-9 border border-indigo-500/40 text-indigo-200"><GitBranch className="mr-1.5 h-4 w-4"/>知識グラフ</Button><Button variant="ghost" size="sm" onClick={onRefresh} disabled={loading} className="h-9 border border-white/10 text-zinc-400"><RotateCcw className={cn("mr-1.5 h-4 w-4", loading && "animate-spin")}/>更新</Button><Button variant="ghost" size="sm" onClick={onClose} className="h-9 border border-white/10 text-zinc-300">閉じる</Button></div>
         </div>
-      )}
-
-      {reportOpen && !reportSent && (
-        <div className="w-full animate-in slide-in-from-bottom-1 duration-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <AlertTriangle className="h-3 w-3 text-amber-500/50" />
-              <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-zinc-600">
-                Describe the issue
-              </span>
+        <div className="shrink-0 space-y-3 border-b border-white/[0.07] px-5 py-3">
+          <label htmlFor="pt-library-search" className="block text-xs text-zinc-400">資料の検索</label>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative min-w-[220px] flex-1"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500"/><input id="pt-library-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="検索語を入力（例：磁場分布、REBCO、4 mm）" className="h-11 w-full rounded-lg border border-white/10 bg-zinc-900/60 pl-10 pr-3 text-sm text-zinc-100 placeholder:text-zinc-500"/></div>
+            <div className="flex flex-wrap items-center gap-1 rounded-lg border border-white/10 p-1" aria-label="検索対象">
+              {([ ["all", "全項目"], ["notes", "メモのみ"], ["bibliography", "書誌情報のみ"] ] as const).map(([scope, label]) => <button key={scope} type="button" aria-pressed={searchScope === scope} onClick={() => setSearchScope(scope)} className={cn("rounded-md px-3 py-2 text-xs", searchScope === scope ? "bg-indigo-600 text-white" : "text-zinc-400 hover:bg-white/5")}>{label}</button>)}
             </div>
-
-            <button
-              onClick={() => setReportOpen(false)}
-              className="text-[10px] text-zinc-700 transition-colors duration-150 hover:text-zinc-400"
-            >
-              Cancel
-            </button>
+            <select aria-label="資料の並び順" value={sortMode} onChange={(event) => setSortMode(event.target.value as typeof sortMode)} className="h-10 rounded-lg border border-white/10 bg-zinc-900 px-3 text-xs text-zinc-200">
+              <option value="recent">最近開いた順</option><option value="title">タイトル順</option><option value="noted">メモあり優先</option>
+            </select>
           </div>
-
-          <div className="mt-1.5 flex gap-2">
-            <input
-              value={reportText}
-              onChange={(event) => setReportText(event.target.value)}
-              placeholder="誤訳・採点ミスの内容を短く入力..."
-              className={cn(
-                "h-7 flex-1 rounded-md border border-white/[0.07] bg-zinc-900/70 px-3",
-                "text-[11px] text-zinc-300 placeholder:text-zinc-700",
-                "transition-all duration-150 focus:border-white/[0.15]",
-                "focus:outline-none focus:ring-1 focus:ring-zinc-800 focus:ring-offset-0"
-              )}
-            />
-
-            <Button
-              size="sm"
-              onClick={submitReport}
-              disabled={!reportText.trim()}
-              className="h-7 rounded-md border border-amber-500/[0.18] bg-amber-500/[0.10] px-2.5 text-[11px] text-amber-400/80 transition-all duration-150 hover:bg-amber-500/[0.15] hover:text-amber-300 disabled:opacity-25"
-            >
-              <Send className="h-3 w-3" />
-            </Button>
+          <p className="text-[11px] text-zinc-500">{filtered.length} 件表示。書誌情報＝タイトル・DOI・ファイル名。本文全文は検索しません。メモのみではメモ未登録の資料を除外します。</p>
+        </div>
+        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+          <div className="min-h-0 w-full shrink-0 overflow-y-auto border-b border-white/[0.08] p-3 lg:w-[38%] lg:border-b-0 lg:border-r" aria-label="資料一覧">
+            {loading && items.length === 0 ? <div className="p-7 text-sm text-zinc-500"><Loader2 className="mr-2 inline h-4 w-4 animate-spin"/>読み込み中</div>
+              : error ? <div className="p-4 text-sm text-red-400">{error}</div>
+                : filtered.length === 0 ? <div className="p-6 text-sm text-zinc-500">該当する資料がありません。検索対象とメモ登録状況を確認してください。</div>
+                  : <div className="space-y-2">{filtered.map((item) => {
+                    const active = selected?.document_id === item.document_id
+                    return <button key={item.paper_key} type="button" aria-pressed={active} onClick={() => { setSelectedId(item.document_id); setEditingId(null); setNoteError("") }} className={cn("w-full rounded-xl border p-3 text-left transition-colors", active ? "border-indigo-500/55 bg-indigo-500/10" : "border-white/[0.06] bg-zinc-900/40 hover:bg-white/[0.06]")}>
+                      <div className="flex items-start gap-3"><FileText className="mt-1 h-4 w-4 shrink-0 text-indigo-400"/><div className="min-w-0 flex-1"><p className="line-clamp-2 text-[14px] font-medium leading-relaxed text-zinc-200">{visibleTitle(item)}</p><p className="mt-1 truncate text-xs text-zinc-500">{item.filenames.at(-1) || item.document_id}</p><p className="mt-2 flex flex-wrap gap-2 text-[11px] text-zinc-500"><span>{item.page_count}ページ</span><span>Quiz {quizProgress(item.document_id)}/{item.total_chunks}</span>{item.layout_ready ? <span className="text-emerald-400">翻訳済</span> : item.mono_ready && item.quality_gate === "fail" ? <span className="text-amber-300">確認用PDFあり（QA不合格）</span> : null}{item.notes?.trim() && <span className="text-indigo-300">メモあり</span>}</p>{item.notes?.trim() && <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-zinc-400">{item.notes}</p>}</div><ChevronRight className={cn("h-4 w-4 shrink-0", active ? "text-indigo-400" : "text-zinc-600")}/></div>
+                    </button>
+                  })}</div>}
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto p-4 lg:p-6" aria-label="選択した資料の詳細">
+            {!selected ? <div className="flex h-full items-center justify-center text-sm text-zinc-500">左の一覧から資料を選択してください。</div> : <div className="mx-auto flex max-w-[850px] flex-col items-center gap-4">
+              <h3 className="w-full text-center text-lg font-semibold leading-relaxed text-zinc-100">{visibleTitle(selected)}</h3>
+              <div className="flex w-full max-w-[720px] items-center justify-center rounded-xl border border-white/10 bg-zinc-900/60 p-3" style={{ minHeight: 240 }}>
+                {previewError ? <div className="p-8 text-center text-sm text-zinc-500">表紙を表示できません。PDF本体は「開く」から確認できます。</div>
+                  : <img key={selected.document_id} loading="lazy" src={`${API_BASE_URL}/api/pdfs/${selected.document_id}/pages/1?scale=1.25`} alt={`${visibleTitle(selected)} の1ページ目プレビュー`} onError={() => setPreviewError(true)} className="max-h-[55vh] w-full object-contain"/>}
+              </div>
+              <div className="grid w-full grid-cols-2 gap-3 text-xs text-zinc-500 sm:grid-cols-4"><span>{selected.page_count} ページ</span><span>Quiz {quizProgress(selected.document_id)}/{selected.total_chunks}</span><span>{selected.layout_ready ? "レイアウト翻訳済" : selected.mono_ready && selected.quality_gate === "fail" ? "確認用PDFあり" : selected.reading_ready ? "本文訳あり" : "未翻訳"}</span><span>{selected.quality_gate === "fail" ? "QA要確認" : selected.cache_stale ? "再検証必要" : "Library登録済"}</span></div>
+              {selected.doi && <p className="w-full break-all text-xs text-zinc-500">DOI: {selected.doi}</p>}
+              <Button onClick={() => onOpen(selected.document_id)} className="h-11 w-full max-w-sm bg-indigo-600 text-white hover:bg-indigo-500">この資料を開く <ArrowRight className="ml-2 h-4 w-4"/></Button>
+              <div className="flex w-full max-w-sm flex-col gap-2">
+                <Button variant="ghost" className="h-11 border border-indigo-500/30 text-indigo-200 hover:bg-indigo-500/10"
+                  disabled={Boolean(exportingOfflineId)}
+                  onClick={() => void saveOfflineZip(selected.document_id)}>
+                  {exportingOfflineId === selected.document_id ? "スマホ用ZIPを作成中..." : "スマホ用に論文＋語彙を持ち出す（ZIP）"}
+                </Button>
+                <p className="text-[11px] leading-relaxed text-zinc-500">原文・保存済み日本語PDF・全語彙を含みます。スマホへコピーしてオフラインで開けます。翻訳品質が不合格でも判定を保持します。</p>
+                {offlineExportError && <p role="alert" className="text-xs text-red-400">{offlineExportError}</p>}
+                {offlineExportNotice && <p role="status" className="text-xs text-emerald-300">{offlineExportNotice}</p>}
+              </div>
+              <div className="w-full rounded-xl border border-white/10 bg-zinc-900/45 p-4"><div className="mb-2 flex items-center justify-between"><h4 className="text-sm font-semibold text-zinc-200">研究メモ</h4>{editingId !== selected.document_id && <button type="button" className="text-xs text-indigo-300 hover:underline" onClick={() => { setEditingId(selected.document_id); setDraftNote(selected.notes ?? ""); setNoteError("") }}>{selected.notes?.trim() ? "編集" : "＋ 追加"}</button>}</div>
+              {editingId === selected.document_id ? <form className="space-y-3" onSubmit={async (event) => { event.preventDefault(); setSavingNote(true); setNoteError(""); try { await onSaveNotes(selected.document_id, draftNote); setEditingId(null) } catch (err) { setNoteError(err instanceof Error ? err.message : "メモの保存に失敗しました") } finally { setSavingNote(false) } }}><label className="text-xs text-zinc-500" htmlFor="pt-library-note-editor">研究結果・図表番号・条件・出典の用途をメモ</label><textarea id="pt-library-note-editor" rows={5} maxLength={3000} value={draftNote} onChange={(event) => setDraftNote(event.target.value)} className="w-full rounded-lg border border-white/10 bg-zinc-900 p-3 text-sm text-zinc-100" placeholder="例：Fig. 3に磁場の実測値。gap 4 mm、20 Kで比較。"/><div className="flex gap-3"><button type="submit" disabled={savingNote} className="rounded-lg bg-indigo-600 px-4 py-2 text-xs text-white disabled:opacity-50">{savingNote ? "保存中" : "保存"}</button><button type="button" className="text-xs text-zinc-400" onClick={() => setEditingId(null)}>キャンセル</button></div>{noteError && <p role="alert" className="text-xs text-red-300">{noteError}</p>}</form> : <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-400">{selected.notes?.trim() || "まだ研究メモはありません。資料の用途や図番号を書いておくと、後からメモのみで探せます。"}</p>}
+              </div>
+            </div>}
           </div>
         </div>
-      )}
-
-      {!reportOpen && !reportSent && (
-        <div className="ml-auto flex items-center gap-4 text-[12px] text-zinc-700">
-          <div className="flex items-center gap-1.5">
-            <Lightbulb className="h-3 w-3" />
-            <span>ヒントを見る</span>
-          </div>
-
-          <div className="hidden items-center gap-1.5 md:flex">
-            <HelpCircle className="h-3 w-3" />
-            <span>ショートカット</span>
-          </div>
-        </div>
-      )}
-    </footer>
+      </section>
+    </div>
   )
 }

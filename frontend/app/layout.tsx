@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Paper Translator",
+  title: "PeperTranslator",
   description: "Local LLM paper translation and learning workspace",
 };
 

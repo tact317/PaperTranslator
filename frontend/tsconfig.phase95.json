@@ -1,0 +1,1 @@
+{"compilerOptions":{"target":"es2020","module":"esnext","lib":["es2020","dom"],"strict":true,"noEmit":true,"skipLibCheck":true,"types":[],"typeRoots":["./empty_types"]},"files":["lib/translation-job-monitor.ts"]}
