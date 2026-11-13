@@ -31,8 +31,8 @@ def replay(case, *, answer=None, source=None, backtranslation=''):
 
 
 def test_version_and_post_hoc_dataset():
-    assert m.QUIZ_GRADER_VERSION in {'quiz-grader-v1.7.26', 'quiz-grader-v1.7.27'}
-    assert m.read_root()['quiz_revision'] in {'v1.7.26-scientific-pairings-and-evidence-backed-ja-rescue','v1.7.27-source-anchored-science-and-japanese-fluency'}
+    assert m.QUIZ_GRADER_VERSION in {"quiz-grader-phase99-numeric-integrity-v1", 'quiz-grader-v1.7.26', 'quiz-grader-v1.7.27'}
+    assert m.read_root()['quiz_revision'] in {'phase99-numeric-integrity-v1','v1.7.26-scientific-pairings-and-evidence-backed-ja-rescue','v1.7.27-source-anchored-science-and-japanese-fluency'}
     reg=json.loads((ROOT/'evaluation/quiz_v1726_blind5_regression.json').read_text('utf-8'))
     assert len(reg['cases']) == 8
     assert all('POST-HOC' in c['regression_origin'] for c in reg['cases'])

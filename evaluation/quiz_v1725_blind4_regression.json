@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "grader_target": "quiz-grader-v1.7.27",
+  "description": "Exposed first-use 2026-10-09 Otten blind4 FAILED 7/24. Converted to post-hoc REGRESSION; not an independent blind.",
+  "blind_metadata": {
+    "article": "Bending properties of different REBCO coated conductor tapes and Roebel cables at T = 77 K",
+    "authors": "Simon Otten, Anna Kario, Andrea Kling, Wilfried Goldacker",
+    "journal": "Superconductor Science and Technology 29 (2016) 125003 (published October 12, 2016)",
+    "doi": "10.1088/0953-2048/29/12/125003",
+    "source_file": "User Library: Otten et al. - 2016 - Bending properties of different REBCO coated conductor tapes and Roebel cables at T = 77 K.pdf",
+    "source_pages": "Physical PDF pages 2-4, 7-8 (1-based); cover page is page 1",
+    "first_use": "24 new exact-source excerpts collected after the v1.7.24 Windows regression PASS. No prior grader scoring on this corpus.",
+    "normalization": "PDF line wraps and soft hyphens removed, math symbol infinity rendered as U+221E, bibliographic square-bracket citations retained in selected source sentences",
+    "privacy": "No PDF, personal user material, or credentials bundled. English source excerpts are from an already published scientific paper.",
+    "caution": "Blind4 is a one-time unseen evaluation; any failures convert it into regression evidence; do not tune the v1.7.24 grader using these cases before first Windows evaluation."
+  },
+  "cases": [
+    {
+      "id": "blind4_otten2016_natural_03",
+      "base_id": "otten2016_p4_minimum_radius_definition",
+      "domain": "superconductivity",
+      "structure": [
+        "definition",
+        "threshold"
+      ],
+      "provenance": "Otten_et_al_2016_SST_29_125003_DOI_10_1088_0953_2048_29_12_125003",
+      "source_page": 4,
+      "variant": "natural",
+      "tier": "full",
+      "source_text": "The minimum bending radius is defined as the lowest radius for which the irreversible degradation is less than 5%.",
+      "user_answer": "最小曲げ半径は、不可逆的な劣化が5%未満となる範囲で最も小さい曲げ半径と定義する。",
+      "expect": {
+        "min_score": 95,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      },
+      "case_rationale": "Preserves strict less-than threshold and definition.",
+      "regression_origin": "POST-HOC blind4 failure 2026-10-09; not blind"
+    },
+    {
+      "id": "blind4_otten2016_natural_04",
+      "base_id": "otten2016_p7_impregnation_blocks_sliding",
+      "domain": "mechanical_engineering",
+      "structure": [
+        "causality",
+        "coordination"
+      ],
+      "provenance": "Otten_et_al_2016_SST_29_125003_DOI_10_1088_0953_2048_29_12_125003",
+      "source_page": 7,
+      "variant": "natural",
+      "tier": "full",
+      "source_text": "Impregnation prevents the strands from sliding relative to each other and makes the cable inflexible.",
+      "user_answer": "含浸は素線同士の相対的なすべりを妨げ、ケーブルの柔軟性を失わせる。",
+      "expect": {
+        "min_score": 95,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      },
+      "case_rationale": "Faithful causal account of strand sliding and cable stiffness.",
+      "regression_origin": "POST-HOC blind4 failure 2026-10-09; not blind"
+    },
+    {
+      "id": "blind4_otten2016_awkward_10",
+      "base_id": "otten2016_p4_negative_strain",
+      "domain": "materials",
+      "structure": [
+        "causality",
+        "conditional"
+      ],
+      "provenance": "Otten_et_al_2016_SST_29_125003_DOI_10_1088_0953_2048_29_12_125003",
+      "source_page": 4,
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "The bending strain is negative when the REBCO layer is on the inside of the bend, since it is compressed.",
+      "user_answer": "REBCO層が曲げの内側にある場合、圧縮されるため、曲げひずみが負になることが起こるということになる。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Clumsy double occurrence/predication for a correct negative-strain relationship.",
+      "regression_origin": "POST-HOC blind4 failure 2026-10-09; not blind"
+    },
+    {
+      "id": "blind4_otten2016_awkward_11",
+      "base_id": "otten2016_p7_roebel_transposition",
+      "domain": "experimental_engineering",
+      "structure": [
+        "quantity",
+        "coordination"
+      ],
+      "provenance": "Otten_et_al_2016_SST_29_125003_DOI_10_1088_0953_2048_29_12_125003",
+      "source_page": 7,
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "Both cables had a transposition length [3] of 226 mm and consisted of 15 strands.",
+      "user_answer": "両ケーブルは転位長が226 mmであるということになっており、15本の素線から構成されているということになっている。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Redundant it-is-the-case phrasing, figures and relationship preserved.",
+      "regression_origin": "POST-HOC blind4 failure 2026-10-09; not blind"
+    },
+    {
+      "id": "blind4_otten2016_awkward_12",
+      "base_id": "otten2016_p8_pretest_relevance",
+      "domain": "experimental_engineering",
+      "structure": [
+        "condition",
+        "obligation"
+      ],
+      "provenance": "Otten_et_al_2016_SST_29_125003_DOI_10_1088_0953_2048_29_12_125003",
+      "source_page": 8,
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "The effect however needs to be taken into account if the magnet is pre-tested at T = 77 K.",
+      "user_answer": "ただし、磁石をT = 77 Kで事前試験する場合、この影響を考慮することが必要となることが求められる。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Redundant need/require nominalizations with the correct condition.",
+      "regression_origin": "POST-HOC blind4 failure 2026-10-09; not blind"
+    },
+    {
+      "id": "blind4_otten2016_omission_13",
+      "base_id": "otten2016_p2_six_mm_five_percent",
+      "domain": "superconductivity",
+      "structure": [
+        "quantity",
+        "threshold"
+      ],
+      "provenance": "Otten_et_al_2016_SST_29_125003_DOI_10_1088_0953_2048_29_12_125003",
+      "source_page": 2,
+      "variant": "omission",
+      "tier": "full",
+      "source_text": "All tested conductors are found to tolerate compressive bending to a radius of 6 mm with less than 5% irreversible degradation of the critical current.",
+      "user_answer": "試験したすべての導体は、臨界電流にほとんど不可逆的な劣化を生じずに圧縮曲げに耐えた。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 89,
+        "must_have_noncorrect": true,
+        "must_have_missing": true
+      },
+      "case_rationale": "Omits both 6 mm radius and below-5% quantitative limits.",
+      "regression_origin": "POST-HOC blind4 failure 2026-10-09; not blind"
+    },
+    {
+      "id": "blind4_otten2016_reversal_24",
+      "base_id": "otten2016_p7_impregnation_order",
+      "domain": "mechanical_engineering",
+      "structure": [
+        "sequence",
+        "obligation"
+      ],
+      "provenance": "Otten_et_al_2016_SST_29_125003_DOI_10_1088_0953_2048_29_12_125003",
+      "source_page": 7,
+      "variant": "reversal",
+      "tier": "full",
+      "source_text": "Impregnation should therefore be done after the cable is bent into the coil shape.",
+      "user_answer": "したがって、含浸はケーブルをコイル形状に曲げる前に実施すべきである。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 59,
+        "must_have_material_issue": true,
+        "must_have_noncorrect": true
+      },
+      "case_rationale": "Reverses procedure order from after to before.",
+      "regression_origin": "POST-HOC blind4 failure 2026-10-09; not blind"
+    }
+  ]
+}

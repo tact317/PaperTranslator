@@ -1,0 +1,28 @@
+{
+  "grader_target": "quiz-grader-v1.7.27",
+  "suite": "full",
+  "source_dataset": "quiz_v1721_regression.json",
+  "cases": [
+    {
+      "id": "blind_ihep_paraphrase_01",
+      "base_id": "blind_ihep_p3_integrals_trajectory",
+      "domain": "accelerator_physics",
+      "structure": [
+        "relative_clause",
+        "causal_relation"
+      ],
+      "provenance": "blind_real_paper_ihep_2022_p3",
+      "source_page": 3,
+      "variant": "paraphrase",
+      "tier": "full",
+      "source_text": "The main function of the correction current is to adjust the first and second integrals of the magnetic field on-axis which determine the beam trajectory along the undulator.",
+      "user_answer": "アンジュレータ内のビーム軌道を決める軸上磁場の第1・第2積分を調整することが、補正電流の主な役割である。",
+      "expect": {
+        "min_score": 70,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      }
+    }
+  ]
+}

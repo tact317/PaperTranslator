@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "grader_target": "quiz-grader-v1.7.27",
+  "description": "4 exposed Chen2024 blind2 fluency failures; post-hoc regression, not an independent blind",
+  "cases": [
+    {
+      "id": "blind2_chen2024_awkward_09",
+      "base_id": "chen2024_p3_jc_angle",
+      "domain": "superconductivity",
+      "structure": [
+        "passive",
+        "relation"
+      ],
+      "provenance": "Chen2024_Review_Superconductivity12_100134",
+      "source_page": 3,
+      "source_section": "review_body",
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "It is important to note that the Jc of these tapes is significantly influenced by the angle between the magnetic field and the surface of the tape.",
+      "user_answer": "これらのテープのJcが磁場とテープ表面との間の角度によって著しく影響されるということは、注意されることが重要である。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "regression_origin": "POST-HOC: exposed blind2 failure, no longer blind"
+    },
+    {
+      "id": "blind2_chen2024_awkward_10",
+      "base_id": "chen2024_p4_racetrack_dipole",
+      "domain": "mechanical_engineering",
+      "structure": [
+        "purpose",
+        "terminology"
+      ],
+      "provenance": "Chen2024_Review_Superconductivity12_100134",
+      "source_page": 4,
+      "source_section": "review_body",
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "This design integrates racetrack coils to generate a uniform dipole field for magnetizing the ReBCO bulks.",
+      "user_answer": "この設計はReBCOバルクを磁化するための一様な双極子磁場を生成することを行うためにレーストラックコイルを統合している。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "regression_origin": "POST-HOC: exposed blind2 failure, no longer blind"
+    },
+    {
+      "id": "blind2_chen2024_awkward_11",
+      "base_id": "chen2024_p7_temperature_range",
+      "domain": "experimental_engineering",
+      "structure": [
+        "relative_clause",
+        "quantity"
+      ],
+      "provenance": "Chen2024_Review_Superconductivity12_100134",
+      "source_page": 7,
+      "source_section": "review_body",
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "The HTS insert, integrated within the cold solenoid magnet, facilitates temperature control ranging from 4 K to above 100 K using GM cryocoolers and heaters.",
+      "user_answer": "冷たいソレノイド磁石の内部へ統合されているHTSインサートは、GM冷凍機とヒーターを使うことによって4 Kから100 Kを超えるまでの温度の制御を容易にすることを可能にする。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "regression_origin": "POST-HOC: exposed blind2 failure, no longer blind"
+    },
+    {
+      "id": "blind2_chen2024_awkward_12",
+      "base_id": "chen2024_p8_hysteresis",
+      "domain": "superconductivity",
+      "structure": [
+        "modal",
+        "coordination"
+      ],
+      "provenance": "Chen2024_Review_Superconductivity12_100134",
+      "source_page": 8,
+      "source_section": "review_body",
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "These advancements could minimize charging delays and hysteresis between the undulator field and charging current, as discussed in [5,103].",
+      "user_answer": "文献[5,103]で議論されているように、これらの進展は、励磁遅れとアンジュレータ磁場と励磁電流の間のヒステリシスを最小化することが可能であるかもしれないという可能性を有する。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "regression_origin": "POST-HOC: exposed blind2 failure, no longer blind"
+    }
+  ]
+}

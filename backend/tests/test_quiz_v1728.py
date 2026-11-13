@@ -38,8 +38,8 @@ def base_result(reference='元の参照訳', note='', feedback='原文の主要�
 
 
 def test_stable_grader_identity_and_new_quality_layer():
-    assert m.QUIZ_GRADER_VERSION == 'quiz-grader-v1.7.27'
-    assert m.read_root()['quiz_revision'] == 'v1.7.27-source-anchored-science-and-japanese-fluency'
+    assert m.QUIZ_GRADER_VERSION in {'quiz-grader-v1.7.27', "quiz-grader-phase99-numeric-integrity-v1"}
+    assert m.read_root()['quiz_revision'] in {'v1.7.27-source-anchored-science-and-japanese-fluency', 'phase99-numeric-integrity-v1'}
     assert m.read_root()['reference_quality_revision'] == 'v1.7.28-display-only'
     assert m._quiz_rubric_cache_path().name == 'quiz_rubric_cache_v10.json'
     assert m.QUIZ_EVALUATION_CACHE_PATH.name == 'quiz_evaluation_cache_v1.json'

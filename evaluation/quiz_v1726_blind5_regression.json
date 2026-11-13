@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "grader_target": "quiz-grader-v1.7.27",
+  "description": "POST-HOC exposed blind5 regression cases; NOT independent blind",
+  "cases": [
+    {
+      "id": "blind5_casalbuoni2023_paraphrase_05",
+      "base_id": "casalbuoni2023_p3_radiation_hardness",
+      "domain": "superconducting_undulator_systems",
+      "structure": [
+        "paraphrase",
+        "radiation hardness"
+      ],
+      "tier": "full",
+      "provenance": "Casalbuoni_et_al_2023_Frontiers_in_Physics_11_1204073_DOI_10_3389_fphy_2023_1204073",
+      "source_page": 3,
+      "variant": "paraphrase",
+      "source_text": "An additional advantage of NbTi SCUs with respect to permanent magnet-based undulators is radiation hardness, which has been demonstrated in NbTi magnets used in different colliders such as the Tevatron [4], HERA [5], and LHC [6] for several decades.",
+      "user_answer": "NbTi製SCUは永久磁石式より耐放射線性にも優れ、その特性はテバトロンやHERA、LHCなどで長年使われてきたNbTi磁石によって実証されている。",
+      "expect": {
+        "min_score": 85,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      },
+      "case_rationale": "Natural compression of citations and decades without losing radiation-hardness evidence.",
+      "regression_origin": "POST-HOC: blind5 initial v1.7.25 result 2026-10-10; not independent"
+    },
+    {
+      "id": "blind5_casalbuoni2023_awkward_09",
+      "base_id": "casalbuoni2023_p3_period_selection",
+      "domain": "superconducting_undulator_systems",
+      "structure": [
+        "awkward",
+        "period selection"
+      ],
+      "tier": "full",
+      "provenance": "Casalbuoni_et_al_2023_Frontiers_in_Physics_11_1204073_DOI_10_3389_fphy_2023_1204073",
+      "source_page": 3,
+      "variant": "awkward",
+      "source_text": "The choice of the undulator period is driven by the selected photon energy range and can be made once the electron energy is fixed.",
+      "user_answer": "アンジュレータ周期を選定することは、選択された光子エネルギー範囲によって決定されることになっており、電子エネルギーが決まった後に選ぶことが可能となることができる。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Semantically faithful but contains redundant decision and potential constructions.",
+      "regression_origin": "POST-HOC: blind5 initial v1.7.25 result 2026-10-10; not independent"
+    },
+    {
+      "id": "blind5_casalbuoni2023_awkward_10",
+      "base_id": "casalbuoni2023_p4_remote_cam_movers",
+      "domain": "superconducting_undulator_systems",
+      "structure": [
+        "awkward",
+        "remote cam movers"
+      ],
+      "tier": "full",
+      "provenance": "Casalbuoni_et_al_2023_Frontiers_in_Physics_11_1204073_DOI_10_3389_fphy_2023_1204073",
+      "source_page": 4,
+      "variant": "awkward",
+      "source_text": "Each SCU module will sit on four cam movers that are remotely controllable.",
+      "user_answer": "各SCUモジュールは、遠隔操作することが可能であることができる4基のカムムーバ上に設置されることになっている。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Redundant ability expression.",
+      "regression_origin": "POST-HOC: blind5 initial v1.7.25 result 2026-10-10; not independent"
+    },
+    {
+      "id": "blind5_casalbuoni2023_awkward_11",
+      "base_id": "casalbuoni2023_p6_wire_properties",
+      "domain": "superconducting_undulator_systems",
+      "structure": [
+        "awkward",
+        "wire properties"
+      ],
+      "tier": "full",
+      "provenance": "Casalbuoni_et_al_2023_Frontiers_in_Physics_11_1204073_DOI_10_3389_fphy_2023_1204073",
+      "source_page": 6,
+      "variant": "awkward",
+      "source_text": "The wire has polyvinyl Formvar insulation with a thickness of 0.04 mm and 2,100 filaments with a diameter of 13 µm.",
+      "user_answer": "この線材は厚さ0.04 mmのポリビニルホルマール絶縁を有しているということになっており、直径13 µmのフィラメントを2,100本有しているということになっている。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Repeated nominalizing assertion while preserving numerical properties.",
+      "regression_origin": "POST-HOC: blind5 initial v1.7.25 result 2026-10-10; not independent"
+    },
+    {
+      "id": "blind5_casalbuoni2023_awkward_12",
+      "base_id": "casalbuoni2023_p7_balanced_voltage_quench",
+      "domain": "superconducting_undulator_systems",
+      "structure": [
+        "awkward",
+        "balanced voltage quench"
+      ],
+      "tier": "full",
+      "provenance": "Casalbuoni_et_al_2023_Frontiers_in_Physics_11_1204073_DOI_10_3389_fphy_2023_1204073",
+      "source_page": 7,
+      "variant": "awkward",
+      "source_text": "The quench detection is based on the balanced voltage principle.",
+      "user_answer": "クエンチ検出は平衡電圧の原理に基づいて行われることが実施される。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Unnatural double passive predicate without semantic change.",
+      "regression_origin": "POST-HOC: blind5 initial v1.7.25 result 2026-10-10; not independent"
+    },
+    {
+      "id": "blind5_casalbuoni2023_omission_13",
+      "base_id": "casalbuoni2023_p2_cooling_to_100K",
+      "domain": "superconducting_undulator_systems",
+      "structure": [
+        "omission",
+        "cooling to 100K"
+      ],
+      "tier": "full",
+      "provenance": "Casalbuoni_et_al_2023_Frontiers_in_Physics_11_1204073_DOI_10_3389_fphy_2023_1204073",
+      "source_page": 2,
+      "variant": "omission",
+      "source_text": "By cooling the magnets to approximately 100 K, their remanence increases and so does the peak field on the magnetic axis.",
+      "user_answer": "磁石を冷却すると残留磁化が増加し、磁気軸上のピーク磁場も増大する。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 89,
+        "must_have_noncorrect": true,
+        "must_have_missing": true
+      },
+      "case_rationale": "Missing approximate 100 K operating condition.",
+      "regression_origin": "POST-HOC: blind5 initial v1.7.25 result 2026-10-10; not independent"
+    },
+    {
+      "id": "blind5_casalbuoni2023_omission_14",
+      "base_id": "casalbuoni2023_p4_three_xray_lines",
+      "domain": "superconducting_undulator_systems",
+      "structure": [
+        "omission",
+        "three xray lines"
+      ],
+      "tier": "full",
+      "provenance": "Casalbuoni_et_al_2023_Frontiers_in_Physics_11_1204073_DOI_10_3389_fphy_2023_1204073",
+      "source_page": 4,
+      "variant": "omission",
+      "source_text": "There are two hard X-ray lines and a soft X-ray line named SASE1, SASE2, and SASE3, respectively.",
+      "user_answer": "この施設にはSASE1とSASE2という硬X線ビームラインが2本ある。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 89,
+        "must_have_noncorrect": true,
+        "must_have_missing": true
+      },
+      "case_rationale": "Omits the soft-X-ray line SASE3 and the full three-line enumeration.",
+      "regression_origin": "POST-HOC: blind5 initial v1.7.25 result 2026-10-10; not independent"
+    },
+    {
+      "id": "blind5_casalbuoni2023_reversal_24",
+      "base_id": "casalbuoni2023_p8_helium_phase_temperature_swap",
+      "domain": "superconducting_undulator_systems",
+      "structure": [
+        "reversal",
+        "helium phase temperature swap"
+      ],
+      "tier": "full",
+      "provenance": "Casalbuoni_et_al_2023_Frontiers_in_Physics_11_1204073_DOI_10_3389_fphy_2023_1204073",
+      "source_page": 8,
+      "variant": "reversal",
+      "source_text": "SUNDAE1 is a vertical cryostat to test SCU coils up to 2 m long in liquid and superfluid helium at 4 K and 2 K, respectively.",
+      "user_answer": "SUNDAE1は長さ2 mまでのSCUコイルを、液体ヘリウム2 Kおよび超流動ヘリウム4 Kでそれぞれ試験する縦型クライオスタットである。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 59,
+        "must_have_material_issue": true,
+        "must_have_noncorrect": true
+      },
+      "case_rationale": "Swaps the 4 K liquid and 2 K superfluid phase-to-temperature associations.",
+      "regression_origin": "POST-HOC: blind5 initial v1.7.25 result 2026-10-10; not independent"
+    }
+  ]
+}

@@ -46,8 +46,8 @@ def _live_evaluation(evidence_span: str = "ビーム軌道を決める") -> m.Tr
 
 
 def test_v1722_version_matches_package():
-    assert m.QUIZ_GRADER_VERSION in {"quiz-grader-v1.7.26", "quiz-grader-v1.7.27"}
-    assert m.read_root()["quiz_revision"] in {"v1.7.26-scientific-pairings-and-evidence-backed-ja-rescue", "v1.7.27-source-anchored-science-and-japanese-fluency"}
+    assert m.QUIZ_GRADER_VERSION in {"quiz-grader-phase99-numeric-integrity-v1", "quiz-grader-v1.7.26", "quiz-grader-v1.7.27"}
+    assert m.read_root()["quiz_revision"] in {"phase99-numeric-integrity-v1", "v1.7.26-scientific-pairings-and-evidence-backed-ja-rescue", "v1.7.27-source-anchored-science-and-japanese-fluency"}
 
 
 @pytest.mark.parametrize("span", ["ビーム軌道を決める", ""])

@@ -37,8 +37,8 @@ def replay(case, answer=None, source=None, backtranslation=''):
 
 
 def test_version_and_unchanged_corpi():
-    assert m.QUIZ_GRADER_VERSION in {'quiz-grader-v1.7.26', 'quiz-grader-v1.7.27'}
-    assert m.read_root()['quiz_revision'] in {'v1.7.26-scientific-pairings-and-evidence-backed-ja-rescue','v1.7.27-source-anchored-science-and-japanese-fluency'}
+    assert m.QUIZ_GRADER_VERSION in {"quiz-grader-phase99-numeric-integrity-v1", 'quiz-grader-v1.7.26', 'quiz-grader-v1.7.27'}
+    assert m.read_root()['quiz_revision'] in {'phase99-numeric-integrity-v1','v1.7.26-scientific-pairings-and-evidence-backed-ja-rescue','v1.7.27-source-anchored-science-and-japanese-fluency'}
     src=json.loads((ROOT/'evaluation/quiz_v1725_blind4_regression.json').read_text('utf-8'))
     assert len(src['cases'])==7
     assert all('POST-HOC' in x['regression_origin'] for x in src['cases'])

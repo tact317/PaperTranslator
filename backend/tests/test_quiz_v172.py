@@ -17,8 +17,8 @@ from backend import main as m
 
 
 def test_v172_revision_and_compact_context() -> None:
-    assert m.read_root()["quiz_revision"].startswith("v1.7.")
-    assert m.QUIZ_GRADER_VERSION.startswith("quiz-grader-v1.7.")
+    assert m.read_root()["quiz_revision"].startswith(("v1.7.", "phase99-"))
+    assert m.QUIZ_GRADER_VERSION.startswith(("quiz-grader-v1.7.", "quiz-grader-phase99-"))
 
 
 def test_rubric_generation_uses_one_normal_ollama_call(monkeypatch) -> None:

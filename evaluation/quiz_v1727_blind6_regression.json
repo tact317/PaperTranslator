@@ -1,0 +1,175 @@
+{
+  "schema_version": 1,
+  "grader_target": "quiz-grader-v1.7.27",
+  "regression_origin": "EXPOSED/POST-HOC - never report as blind",
+  "cases": [
+    {
+      "id": "blind6_arsenault2023_natural_03",
+      "base_id": "arsenault2023_p3_03",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "natural",
+        "axisymmetric model and elements"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 3,
+      "variant": "natural",
+      "source_text": "All models were implemented with first order shape functions in a 2-D axisymmetric geometry.",
+      "user_answer": "すべてのモデルを、一次形状関数を用いた2次元軸対称形状で実装した。",
+      "expect": {
+        "min_score": 95,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      },
+      "case_rationale": "Preserves first-order interpolation and 2-D axisymmetry.",
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation",
+      "regression_origin": "EXPOSED BLIND6 / POST-HOC / NOT AN INDEPENDENT BLIND"
+    },
+    {
+      "id": "blind6_arsenault2023_paraphrase_07",
+      "base_id": "arsenault2023_p4_07",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "paraphrase",
+        "efficiency at equal accuracy"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 4,
+      "variant": "paraphrase",
+      "source_text": "The most accurate solution is obtained with approximately half the number of DOFs and a quarter of the simulation time using the H–φ/D formulation compared to the full H formulation.",
+      "user_answer": "完全H定式化と比較すると、H–φ/D定式化では自由度を約半分、計算時間を約4分の1にしながら、最も精度の高い解を得られる。",
+      "expect": {
+        "min_score": 85,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      },
+      "case_rationale": "Maintains both numerical ratios with the correct baseline.",
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation",
+      "regression_origin": "EXPOSED BLIND6 / POST-HOC / NOT AN INDEPENDENT BLIND"
+    },
+    {
+      "id": "blind6_arsenault2023_awkward_09",
+      "base_id": "arsenault2023_p1_09",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "awkward",
+        "repeated necessity wording"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 1,
+      "variant": "awkward",
+      "source_text": "However, although the simulations were much faster, high-order shape functions were required in the H–φ formulation in order to obtain similar accuracy between the two formulations.",
+      "user_answer": "しかしシミュレーションはかなり高速だったにもかかわらず、2つの定式化で同程度の精度を得るためには、H–φ定式化で高次形状関数を使用することが必要となることが必要であった。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Meaning retained; redundant doubled necessity construction is awkward.",
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation",
+      "regression_origin": "EXPOSED BLIND6 / POST-HOC / NOT AN INDEPENDENT BLIND"
+    },
+    {
+      "id": "blind6_arsenault2023_awkward_10",
+      "base_id": "arsenault2023_p3_10",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "awkward",
+        "finding performed wording"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 3,
+      "variant": "awkward",
+      "source_text": "We find excellent qualitative agreement between all simulations.",
+      "user_answer": "すべてのシミュレーションの間に、優れた定性的な一致があるということを見いだすことが行われた。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Meaning retained; artificial nominalization and performed-finding construction.",
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation",
+      "regression_origin": "EXPOSED BLIND6 / POST-HOC / NOT AN INDEPENDENT BLIND"
+    },
+    {
+      "id": "blind6_arsenault2023_awkward_11",
+      "base_id": "arsenault2023_p4_11",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "awkward",
+        "double finding wording"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 4,
+      "variant": "awkward",
+      "source_text": "We find that the H and H–φ/D formulations converge at approximately the same rate and to the same value.",
+      "user_answer": "H定式化とH–φ/D定式化が、おおむね同じ速度で同じ値へ収束するということが見いだされることになったということである。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Technical content correct; layered Japanese evidential and nominalizing expressions.",
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation",
+      "regression_origin": "EXPOSED BLIND6 / POST-HOC / NOT AN INDEPENDENT BLIND"
+    },
+    {
+      "id": "blind6_arsenault2023_awkward_12",
+      "base_id": "arsenault2023_p5_12",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "awkward",
+        "repeated demonstration wording"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 5,
+      "variant": "awkward",
+      "source_text": "The H–φ/D formulation still converges almost to the same results as the full H formulation, as it is shown by the relative error in Fig. 5(c) being very small.",
+      "user_answer": "H–φ/D定式化が完全H定式化とほぼ同じ結果に収束するということは、図5(c)の相対誤差が非常に小さいことによって示されているということが示されることになる。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Contains repeated shown-that construction but no reversed meaning.",
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation",
+      "regression_origin": "EXPOSED BLIND6 / POST-HOC / NOT AN INDEPENDENT BLIND"
+    },
+    {
+      "id": "blind6_arsenault2023_omission_14",
+      "base_id": "arsenault2023_p2_14",
+      "domain": "computational_electromagnetics",
+      "structure": [
+        "omission",
+        "air resistivity setting omitted"
+      ],
+      "tier": "full",
+      "provenance": "Arsenault_et_al_2023_IEEE_TAS_33_7_6801306_DOI_10_1109_TASC_2023_3293449",
+      "source_page": 2,
+      "variant": "omission",
+      "source_text": "When modeling materials with very low resistivities such as HTSs, it is customary to set the resistivity in air domains to 1 Ω·m in order to avoid spurious currents and have reasonable convergence [8], [9].",
+      "user_answer": "HTSのような低抵抗率の材料をモデル化する際は、不要な電流を避け適切な収束性を得るため、空気領域に抵抗率を設定するのが一般的である。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 89,
+        "must_have_noncorrect": true,
+        "must_have_missing": true
+      },
+      "case_rationale": "The mandatory numeric setting 1 ohm-meter is removed.",
+      "blind_origin": "POST-HOC: exposed blind6, excluded from independent validation",
+      "regression_origin": "EXPOSED BLIND6 / POST-HOC / NOT AN INDEPENDENT BLIND"
+    }
+  ]
+}

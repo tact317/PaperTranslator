@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "grader_target": "quiz-grader-v1.7.27",
+  "description": "5 independent published Richter 2021 blind3 failures now used as post-hoc regression (not unseen blind)",
+  "cases": [
+    {
+      "id": "blind3_richter2021_paraphrase_07",
+      "base_id": "richter2021_p2_wave_surface",
+      "domain": "experimental_engineering",
+      "structure": [
+        "purpose",
+        "relative_clause"
+      ],
+      "provenance": "Richter_et_al_IPAC2021_THPAB042_CC_BY_3.0",
+      "source_page": 2,
+      "variant": "paraphrase",
+      "tier": "full",
+      "source_text": "To ensure a total liquid nitrogen coverage in the bend region, a waved surface was added where the conductor tape touches the body.",
+      "user_answer": "曲げ部分が液体窒素で十分に覆われるよう、テープと曲げ治具の接触面を波形にした。",
+      "expect": {
+        "min_score": 85,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      },
+      "case_rationale": "semantically equivalent alternative expression",
+      "regression_origin": "POST-HOC exposed blind3 v1.7.23 fail (cannot count as fresh blind)"
+    },
+    {
+      "id": "blind3_richter2021_awkward_09",
+      "base_id": "richter2021_p1_77k_cool",
+      "domain": "superconductivity",
+      "structure": [
+        "purpose",
+        "sequential"
+      ],
+      "provenance": "Richter_et_al_IPAC2021_THPAB042_CC_BY_3.0",
+      "source_page": 1,
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "To represent magnet winding procedures, the samples were bent at room temperature and then cooled down to T = 77 K in the bent state to test for potential degradation of the superconducting properties.",
+      "user_answer": "磁石の巻線手順を再現するため、試料は室温で曲げられることが行われ、曲げた状態のままT = 77 Kに冷却されることが行われて、超伝導特性の劣化の可能性が試験された。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Unnatural repeated passive nominalization; scientific meaning retained",
+      "regression_origin": "POST-HOC exposed blind3 v1.7.23 fail (cannot count as fresh blind)"
+    },
+    {
+      "id": "blind3_richter2021_awkward_10",
+      "base_id": "richter2021_p1_strain_harm",
+      "domain": "superconductivity",
+      "structure": [
+        "causality",
+        "modal"
+      ],
+      "provenance": "Richter_et_al_IPAC2021_THPAB042_CC_BY_3.0",
+      "source_page": 1,
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "This bending will induce significant bending strain on the superconducting layer and can harm its conducting properties.",
+      "user_answer": "この曲げによって超伝導層に大きな曲げひずみが誘起されることが起き、その通電特性が損なわれる可能性があり得ることができる。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Redundant possibility and double predication; scientific meaning retained",
+      "regression_origin": "POST-HOC exposed blind3 v1.7.23 fail (cannot count as fresh blind)"
+    },
+    {
+      "id": "blind3_richter2021_awkward_11",
+      "base_id": "richter2021_p2_sleeves",
+      "domain": "experimental_engineering",
+      "structure": [
+        "purpose",
+        "mechanics"
+      ],
+      "provenance": "Richter_et_al_IPAC2021_THPAB042_CC_BY_3.0",
+      "source_page": 2,
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "On top, we included two sleeves covering half the sample width to reduce the strain on the s-shaped transition after the copper clamps down to the bending body.",
+      "user_answer": "その上で、銅クランプから曲げ治具までのS字状の移行部におけるひずみを減らすことをするために、試料幅の半分を覆う2個のスリーブを含めることを行った。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Redundant action nominalization; scientific meaning retained",
+      "regression_origin": "POST-HOC exposed blind3 v1.7.23 fail (cannot count as fresh blind)"
+    },
+    {
+      "id": "blind3_richter2021_awkward_12",
+      "base_id": "richter2021_p3_future_work",
+      "domain": "superconductivity",
+      "structure": [
+        "coordination",
+        "research_plan"
+      ],
+      "provenance": "Richter_et_al_IPAC2021_THPAB042_CC_BY_3.0",
+      "source_page": 3,
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "We envisage a subsequent experiment investigating full helical bends (three periods) as well as a larger variation of substrate thicknesses and more samples from the same manufacturer.",
+      "user_answer": "我々は今後、全螺旋曲げ（3周期）を調べること、基板厚さをより幅広く変えること、同じメーカーのより多くの試料を調べることを行う実験を想定することをしている。",
+      "expect": {
+        "min_score": 55,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_max": 12
+      },
+      "case_rationale": "Stacked verbs and nominalizations; meaning retained",
+      "regression_origin": "POST-HOC exposed blind3 v1.7.23 fail (cannot count as fresh blind)"
+    }
+  ]
+}

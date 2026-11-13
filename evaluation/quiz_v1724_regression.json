@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "grader_target": "quiz-grader-v1.7.27",
+  "description": "v1.7.21 targeted regression: unchanged 13-case regression corpus from v1.7.19; this is regression material, not a new blind set.",
+  "blind_metadata": {
+    "source_title": "Development and magnetic field measurement of a 0.5-m-long superconducting undulator at IHEP + existing 60-case regression corpus",
+    "case_count": 13,
+    "design": "9 v1.7.16 targeted regressions + HTS valid magnitude paraphrase + chemistry trend reversal + 2 Japanese-fluency regressions.",
+    "acceptance_note": "Passing this set does not count as final blind validation."
+  },
+  "suite_order": [
+    "quick",
+    "standard",
+    "full"
+  ],
+  "cases": [
+    {
+      "id": "blind_ihep_natural_01",
+      "base_id": "blind_ihep_p2_period_pole",
+      "domain": "accelerator_physics",
+      "structure": [
+        "coordination",
+        "quantity"
+      ],
+      "provenance": "blind_real_paper_ihep_2022_p2",
+      "source_page": 2,
+      "variant": "natural",
+      "tier": "full",
+      "source_text": "The period length is 15 mm, and each pole is 3 mm in width.",
+      "user_answer": "周期長は15 mmで、各磁極の幅は3 mmである。",
+      "expect": {
+        "min_score": 70,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      }
+    },
+    {
+      "id": "blind_ihep_natural_03",
+      "base_id": "blind_ihep_p4_labview",
+      "domain": "experimental_engineering",
+      "structure": [
+        "passive",
+        "method"
+      ],
+      "provenance": "blind_real_paper_ihep_2022_p4",
+      "source_page": 4,
+      "variant": "natural",
+      "tier": "full",
+      "source_text": "The moving control and data acquisition program was developed based on LabVIEW software.",
+      "user_answer": "移動制御およびデータ収集プログラムはLabVIEWを用いて開発された。",
+      "expect": {
+        "min_score": 70,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      }
+    },
+    {
+      "id": "blind_ihep_paraphrase_01",
+      "base_id": "blind_ihep_p3_integrals_trajectory",
+      "domain": "accelerator_physics",
+      "structure": [
+        "relative_clause",
+        "causal_relation"
+      ],
+      "provenance": "blind_real_paper_ihep_2022_p3",
+      "source_page": 3,
+      "variant": "paraphrase",
+      "tier": "full",
+      "source_text": "The main function of the correction current is to adjust the first and second integrals of the magnetic field on-axis which determine the beam trajectory along the undulator.",
+      "user_answer": "アンジュレータ内のビーム軌道を決める軸上磁場の第1・第2積分を調整することが、補正電流の主な役割である。",
+      "expect": {
+        "min_score": 70,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      }
+    },
+    {
+      "id": "blind_ihep_omission_01",
+      "base_id": "blind_ihep_p2_correction_turns",
+      "domain": "experimental_engineering",
+      "structure": [
+        "coordination",
+        "quantity"
+      ],
+      "provenance": "blind_real_paper_ihep_2022_p2",
+      "source_page": 2,
+      "variant": "omission",
+      "tier": "full",
+      "source_text": "The first correction coil pack consists of 59 turns and the second one consists of 20 turns.",
+      "user_answer": "第1補正コイルパックは59ターンで構成されている。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 84,
+        "must_have_missing": true
+      }
+    },
+    {
+      "id": "blind_ihep_omission_02",
+      "base_id": "blind_ihep_p4_hall_sledge",
+      "domain": "experimental_engineering",
+      "structure": [
+        "passive",
+        "relative_clause",
+        "location"
+      ],
+      "provenance": "blind_real_paper_ihep_2022_p4",
+      "source_page": 4,
+      "variant": "omission",
+      "tier": "full",
+      "source_text": "The SCU assembly was equipped with a Hall probe sledge guided by rails mounted in the middle of the gap.",
+      "user_answer": "SCUアセンブリにはホールプローブ用スレッジが備えられていた。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 84,
+        "must_have_missing": true
+      }
+    },
+    {
+      "id": "blind_ihep_omission_03",
+      "base_id": "blind_ihep_p4_quench_training",
+      "domain": "accelerator_physics",
+      "structure": [
+        "temporal",
+        "coordination",
+        "quantity"
+      ],
+      "provenance": "blind_real_paper_ihep_2022_p4",
+      "source_page": 4,
+      "variant": "omission",
+      "tier": "full",
+      "source_text": "After 28 quenches, the maximum operation current reaches 480 A and the peak magnetic field on-axis reaches 1 T at 450 A.",
+      "user_answer": "28回のクエンチ後、最大運転電流は480 Aに達した。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 84,
+        "must_have_missing": true
+      }
+    },
+    {
+      "id": "blind_ihep_numeric_error_04",
+      "base_id": "blind_ihep_p6_phase_rms",
+      "domain": "accelerator_physics",
+      "structure": [
+        "quantity",
+        "mapping",
+        "enumeration"
+      ],
+      "provenance": "blind_real_paper_ihep_2022_p6",
+      "source_page": 6,
+      "variant": "numeric_error",
+      "tier": "full",
+      "source_text": "The phase RMS errors are 14.8 degrees, 6.1 degrees and 8.2 degrees for 0 A, 20 A and 30 A correction currents, respectively.",
+      "user_answer": "補正電流がそれぞれ0 A、20 A、30 Aの場合、位相RMS誤差は14.8度、8.2度、6.1度である。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 89,
+        "must_have_noncorrect": true
+      }
+    },
+    {
+      "id": "hts_predicate__numeric_error",
+      "base_id": "hts_predicate",
+      "domain": "superconductivity",
+      "structure": [
+        "coordination",
+        "comparison",
+        "quantity"
+      ],
+      "provenance": "user_regression",
+      "variant": "numeric_error",
+      "tier": "quick",
+      "source_text": "The very hard x-ray source generated by the BHTSU will increase the brilliance at the beamline by over one order of magnitude in comparison to other state-of-the-art undulator technologies and allow experiments to be carried out with photon energies in excess of 60 keV.",
+      "user_answer": "BHTSUによって生成される非常に硬いX線源は、他の最先端アンジュレータ技術と比べてビームラインの輝度を約2倍に向上させ、60 keVを超える光子エネルギーでの実験を可能にする。",
+      "expect": {
+        "min_score": 35,
+        "max_score": 89,
+        "must_have_noncorrect": true
+      }
+    },
+    {
+      "id": "mechanics_condition__reversal",
+      "base_id": "mechanics_condition",
+      "domain": "mechanical_engineering",
+      "structure": [
+        "passive",
+        "as_long_as",
+        "proportionality"
+      ],
+      "provenance": "synthetic",
+      "variant": "reversal",
+      "tier": "standard",
+      "source_text": "The displacement measured at the free end of the beam was proportional to the applied load as long as the material remained within the elastic regime.",
+      "user_answer": "材料が弾性域内にある限り、梁の自由端で測定した変位は加えた荷重に反比例した。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 59,
+        "must_have_material_issue": true
+      }
+    },
+    {
+      "id": "hts_predicate__paraphrase",
+      "base_id": "hts_predicate",
+      "domain": "superconductivity",
+      "structure": [
+        "coordination",
+        "comparison",
+        "quantity"
+      ],
+      "provenance": "user_regression",
+      "variant": "paraphrase",
+      "tier": "quick",
+      "source_text": "The very hard x-ray source generated by the BHTSU will increase the brilliance at the beamline by over one order of magnitude in comparison to other state-of-the-art undulator technologies and allow experiments to be carried out with photon energies in excess of 60 keV.",
+      "user_answer": "BHTSUが生み出す高エネルギーX線源により、ビームラインの輝度は従来の最先端アンジュレータ技術より10倍を超えて高まり、60 keV超の光子を用いた実験が可能になる。",
+      "expect": {
+        "min_score": 92,
+        "max_score": 100,
+        "forbid_material_issue": true,
+        "japanese_min": 13
+      }
+    },
+    {
+      "id": "chemistry_cause__reversal",
+      "base_id": "chemistry_cause",
+      "domain": "chemistry",
+      "structure": [
+        "because",
+        "causality"
+      ],
+      "provenance": "synthetic",
+      "variant": "reversal",
+      "tier": "standard",
+      "source_text": "The reaction rate increased with temperature because the apparent activation energy was reduced in the presence of the catalyst.",
+      "user_answer": "温度が上がるほど反応速度は低下し、その原因は触媒が見かけの活性化エネルギーを増加させるためである。",
+      "expect": {
+        "min_score": 0,
+        "max_score": 59,
+        "must_have_material_issue": true
+      }
+    },
+    {
+      "id": "mechanics_condition__awkward",
+      "base_id": "mechanics_condition",
+      "domain": "mechanical_engineering",
+      "structure": [
+        "passive",
+        "as_long_as",
+        "proportionality"
+      ],
+      "provenance": "synthetic",
+      "variant": "awkward",
+      "tier": "standard",
+      "source_text": "The displacement measured at the free end of the beam was proportional to the applied load as long as the material remained within the elastic regime.",
+      "user_answer": "梁の自由端で測定された変位は、材料が弾性レジームの中に残る限り、適用された荷重へ比例していました。",
+      "expect": {
+        "min_score": 78,
+        "max_score": 98,
+        "japanese_max": 13
+      }
+    },
+    {
+      "id": "sensor_dependency__awkward",
+      "base_id": "sensor_dependency",
+      "domain": "experimental_engineering",
+      "structure": [
+        "because",
+        "dependency",
+        "negation"
+      ],
+      "provenance": "synthetic",
+      "variant": "awkward",
+      "tier": "full",
+      "source_text": "Because the sensor response depends on flow direction, calibration performed in one orientation cannot be applied directly to measurements taken in the opposite direction.",
+      "user_answer": "センサ応答が流れ方向へ依存するため、一つの向きで実行された校正は反対方向で取られた測定へ直接適用されることができません。",
+      "expect": {
+        "min_score": 78,
+        "max_score": 98,
+        "japanese_max": 13
+      }
+    }
+  ]
+}

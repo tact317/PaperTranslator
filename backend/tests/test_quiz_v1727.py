@@ -29,8 +29,8 @@ def replay(case, answer=None):
 
 
 def test_versions_and_archived_immutable_data():
-    assert m.QUIZ_GRADER_VERSION == 'quiz-grader-v1.7.27'
-    assert m.read_root()['quiz_revision'] == 'v1.7.27-source-anchored-science-and-japanese-fluency'
+    assert m.QUIZ_GRADER_VERSION in {'quiz-grader-v1.7.27', "quiz-grader-phase99-numeric-integrity-v1"}
+    assert m.read_root()['quiz_revision'] in {'v1.7.27-source-anchored-science-and-japanese-fluency', 'phase99-numeric-integrity-v1'}
     reg = json.loads((ROOT/'evaluation/quiz_v1727_blind6_regression.json').read_text('utf8'))
     assert len(reg['cases']) == len(FIX) == 7
     assert all('POST-HOC' in x.get('regression_origin', '') for x in reg['cases'])

@@ -53,8 +53,8 @@ def _evaluation() -> m.TranslationEvaluation:
 
 
 def test_v1720_revision_and_cache_generation() -> None:
-    assert m.read_root()["quiz_revision"] == "v1.7.20-relative-clause-role-preserving-rescue"
-    assert m.QUIZ_GRADER_VERSION == "quiz-grader-v1.7.20"
+    assert m.read_root()["quiz_revision"] in {"v1.7.20-relative-clause-role-preserving-rescue", "phase99-numeric-integrity-v1"}
+    assert m.QUIZ_GRADER_VERSION in {"quiz-grader-v1.7.20", "quiz-grader-phase99-numeric-integrity-v1"}
     assert m._quiz_rubric_cache_path().name == "quiz_rubric_cache_v10.json"
 
 
