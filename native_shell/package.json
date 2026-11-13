@@ -1,0 +1,8 @@
+{
+  "name": "pepertranslator-native-shell",
+  "version": "1.3.5",
+  "private": true,
+  "main": "main.js",
+  "productName": "PeperTranslator",
+  "description": "Native Windows shell for the local PeperTranslator application"
+}
