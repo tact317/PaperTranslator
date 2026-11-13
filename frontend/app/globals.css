@@ -386,3 +386,15 @@ body{
 .pt-kg-shell input:focus-visible,.pt-kg-shell select:focus-visible,.pt-kg-shell textarea:focus-visible,
 .pt-kg-shell button:focus-visible { outline:2px solid #818cf8; outline-offset:2px; }
 .pt-kg-canvas { touch-action:none; user-select:none; }
+
+/* ── Dark-theme text contrast ────────────────────────
+   Tailwind's zinc-500..800 are too dim on --bg (#0d1117): zinc-600 is about
+   2.6:1 and zinc-700 about 1.9:1. Lift each step while keeping the hierarchy.
+   Kept inside the utilities layer so hover:/focus: variants still win, and the
+   light theme's own overrides (unlayered, !important) are unaffected. */
+@layer utilities {
+  .text-zinc-500 { color:#a1a1aa; }  /* ~7.4:1 secondary text */
+  .text-zinc-600 { color:#8b8b94; }  /* ~5.5:1 captions, hints */
+  .text-zinc-700 { color:#71717a; }  /* ~3.9:1 disabled / tertiary */
+  .text-zinc-800 { color:#5c5c66; }  /* decorative separators */
+}
